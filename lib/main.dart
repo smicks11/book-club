@@ -1,3 +1,4 @@
+import 'package:book_club/controller/app_controller.dart';
 import 'package:book_club/provider/AuthenticationProvider.dart';
 import 'package:book_club/provider/Userprovider.dart';
 import 'package:book_club/screens/SignIn_Page.dart';
@@ -6,12 +7,15 @@ import 'package:book_club/screens/homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:statusbarz/statusbarz.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  //Dependency Injection just like how tou are using provider below
+  Get.put(AppController());
   runApp(MyApp());
 }
 
