@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
             height: 65,
             width: MediaQuery.of(context).size.height * 0.2,
             decoration: BoxDecoration(
-              color: _appController.morning.value ? buttonColor : white,
+              color: _appController.morning.value == true ? buttonColor : white,
               borderRadius: BorderRadius.circular(30),
             ),
             child: CustomText(
@@ -111,7 +111,7 @@ class _HomePageState extends State<HomePage> {
             height: 65,
             width: MediaQuery.of(context).size.height * 0.2,
             decoration: BoxDecoration(
-              color: _appController.weekdays.value ? buttonColor : white,
+              color: _appController.weekdays.value == true ? buttonColor : white,
               borderRadius: BorderRadius.circular(30),
             ),
             child: CustomText(
@@ -155,7 +155,7 @@ class _HomePageState extends State<HomePage> {
             height: 65,
             width: MediaQuery.of(context).size.height * 0.2,
             decoration: BoxDecoration(
-              color: _appController.yes.value ? buttonColor : white,
+              color: _appController.yes.value == true ? buttonColor : white,
               borderRadius: BorderRadius.circular(30),
             ),
             child: CustomText(
