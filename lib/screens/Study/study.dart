@@ -10,8 +10,8 @@ class Study extends StatefulWidget {
 class _StudyState extends State<Study> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      
+    return Container(
+
     );
   }
 }
