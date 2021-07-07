@@ -1,4 +1,5 @@
 import 'package:book_club/screens/homepage.dart';
+import 'package:book_club/shared/button.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -306,22 +307,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         //       password: passwordController.text.trim(),
                         //     );
                       },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 60,
-                        width: double.infinity,
-                        margin: EdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                          color: buttonColor,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: CustomText(
-                          text: "Sign Up",
-                          size: 17,
-                          weight: FontWeight.w400,
-                          color: white,
-                        ),
-                      ),
+                      child: button(text:'Sign Up'),
                     ),
                     Container(
                       height: MediaQuery.of(context).size.height * 0.1,
@@ -362,3 +348,5 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 }
+
+
