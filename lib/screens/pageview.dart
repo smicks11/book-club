@@ -1,9 +1,12 @@
-// import 'package:book_club/screens/curatedTimeTable.dart';
-import 'package:book_club/screens/curatedtimetable.dart';
+
 import 'package:book_club/screens/library.dart';
-import 'package:book_club/screens/study.dart';
-// import 'package:book_club/shared/constants.dart';
+import 'package:book_club/screens/Study/study.dart';
+import 'package:book_club/shared/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hex_color/flutter_hex_color.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import 'Homescreen/curatedtimetable.dart';
 
 class PageViewScreen extends StatefulWidget {
   @override
@@ -18,19 +21,14 @@ class _PageViewScreenState extends State<PageViewScreen> {
   @override
   void initState() {
     super.initState();
-
     _selectedPageIndex = 0;
-
-    
     _pages = [CuratedTimeTable(), Study(), Library()];
-
     _pageController = PageController(initialPage: _selectedPageIndex);
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-
     super.dispose();
   }
 
@@ -45,25 +43,25 @@ class _PageViewScreenState extends State<PageViewScreen> {
         children: _pages,
       ),
       bottomNavigationBar: Container(
-        height: 100,
+        height: 110,
         child: BottomNavigationBar(
           items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home,),
+              icon:  SvgPicture.asset('assets/svg/home.svg',),
               label: "Home",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.library_books_sharp,),
+              icon: SvgPicture.asset('assets/svg/study.svg',),
               label: "Study",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.library_books,),
+              icon: SvgPicture.asset('assets/svg/library.svg',),
               label: "Library",
             ),
            
           ],
-          selectedItemColor: Colors.blueAccent,
-          unselectedItemColor: Colors.grey.shade300,
+          selectedItemColor: HexColor('1A43E7'),
+          unselectedItemColor: HexColor('1c1c1c'),
           type: BottomNavigationBarType.fixed,
           // showSelectedLabels: true,
           // showUnselectedLabels: false,
