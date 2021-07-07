@@ -1,6 +1,7 @@
 import 'package:book_club/controller/app_controller.dart';
 import 'package:book_club/models/userModel.dart';
 import 'package:book_club/provider/Userprovider.dart';
+import 'package:book_club/screens/pageview.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,7 +22,7 @@ class _HomePageState extends State<HomePage> {
   AppController _appController = Get.find();
   UserProvider userProvider;
 
- // bool _selectedOptions = false;
+  // bool _selectedOptions = false;
 
   Widget _buildHeader() {
     List<UserModel> userModel = userProvider.userModelList;
@@ -111,7 +112,8 @@ class _HomePageState extends State<HomePage> {
             height: 65,
             width: MediaQuery.of(context).size.height * 0.2,
             decoration: BoxDecoration(
-              color: _appController.weekdays.value == true ? buttonColor : white,
+              color:
+                  _appController.weekdays.value == true ? buttonColor : white,
               borderRadius: BorderRadius.circular(30),
             ),
             child: CustomText(
@@ -279,7 +281,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        FirebaseAuth.instance.signOut();
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (ctx) => PageViewScreen()));
                       },
                       child: Container(
                         alignment: Alignment.center,
