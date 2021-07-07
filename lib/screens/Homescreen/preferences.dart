@@ -2,8 +2,10 @@ import 'package:book_club/shared/button.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hex_color/flutter_hex_color.dart';
+import 'package:flutter_cupertino_date_picker_fork/flutter_cupertino_date_picker_fork.dart';
 
 class Preferences extends StatefulWidget {
   @override
@@ -11,10 +13,11 @@ class Preferences extends StatefulWidget {
 }
 
 class _PreferencesState extends State<Preferences> {
+  DateTime dateTime = DateTime.now();
   List days = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
   String selectedDay = 'Mon';
-  String selectedValueCourse;
-  List<String> courseList = ["CSC 320", "CSC 310", "CSC 310", "CSC 300", "CSC 220"];
+  String selectedValueCourse = "CSC 320";
+  List<String> courseList = ["CSC 320", "CSC 310", "CSC 330", "CSC 300", "CSC 220"];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,53 +62,102 @@ class _PreferencesState extends State<Preferences> {
                                 .toList())),
                   )),
               SizedBox(height: 56,),
-              Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomText(
-                        text: 'Morning Session', size: 16, color: HexColor('0F193B')),
-                    SizedBox(height: 16,),
-                    Container(
-                      height: 60,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12)),
-                      child: DropdownButton(
-                        isExpanded: true,
-                        hint: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            "Choose Course",
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                        value: selectedValueCourse,
-                        items: courseList.map((String value) {
-                          return DropdownMenuItem(
-                            value: value,
+              Column(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomText(
+                          text: 'Morning Session', size: 16, color: HexColor('0F193B')),
+                      SizedBox(height: 16,),
+                      Container(
+                        height: 60,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12)),
+                        child: DropdownButton(
+                          isExpanded: true,
+                          hint: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Text(
-                              value,
+                              "Choose Course",
                               style: TextStyle(
                                   fontSize: 14,
-                                  color: primaryTextColor,
+                                  color: Colors.black,
                                   fontWeight: FontWeight.w500),
                             ),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedValueCourse = value;
-                          });
-                        },
+                          ),
+                          value: selectedValueCourse,
+                          items: courseList.map((String value) {
+                            return DropdownMenuItem(
+                              value: value,
+                              child: Text(
+                                value,
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    color: primaryTextColor,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedValueCourse = value;
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                  ],
-                )
+                    ],
+                  ),
+                  SizedBox(height: 40,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomText(
+                          text: 'Evening Session', size: 16, color: HexColor('0F193B')),
+                      SizedBox(height: 16,),
+                      Container(
+                        height: 60,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12)),
+                        child: DropdownButton(
+                          isExpanded: true,
+                          hint: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(
+                              "Choose Course",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                          value: selectedValueCourse,
+                          items: courseList.map((String value) {
+                            return DropdownMenuItem(
+                              value: value,
+                              child: Text(
+                                value,
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    color: primaryTextColor,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedValueCourse = value;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  )
+                ],
               ),
               Spacer(),
               button(text:'Update'),

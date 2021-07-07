@@ -20,9 +20,10 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: buttonColor,
       body: SafeArea(
         child: Container(
+          color: backgroundColor,
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
