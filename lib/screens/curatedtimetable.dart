@@ -10,8 +10,7 @@ class CuratedTimeTable extends StatefulWidget {
 class _CuratedTimeTableState extends State<CuratedTimeTable> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      
+    return Container(
       
     );
   }

@@ -1,7 +1,8 @@
-import 'package:book_club/screens/curatedTimeTable.dart';
+// import 'package:book_club/screens/curatedTimeTable.dart';
+import 'package:book_club/screens/curatedtimetable.dart';
 import 'package:book_club/screens/library.dart';
 import 'package:book_club/screens/study.dart';
-import 'package:book_club/shared/constants.dart';
+// import 'package:book_club/shared/constants.dart';
 import 'package:flutter/material.dart';
 
 class PageViewScreen extends StatefulWidget {

@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 
 class Study extends StatefulWidget {
@@ -11,7 +13,9 @@ class _StudyState extends State<Study> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+      body: Center(
+        child: Text("This is a new page"),
+      ),
     );
   }
 }

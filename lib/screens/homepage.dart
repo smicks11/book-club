@@ -1,13 +1,9 @@
-import 'package:book_club/controller/app_controller.dart';
 import 'package:book_club/models/userModel.dart';
 import 'package:book_club/provider/Userprovider.dart';
-import 'package:book_club/screens/pageview.dart';
+// import 'package:book_club/screens/pageview.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,10 +15,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  AppController _appController = Get.find();
   UserProvider userProvider;
 
-  // bool _selectedOptions = false;
+  List _read = ["Morning", "Evening"];
+  String _firstSelectedOption;
+  String _secondSelectedOption;
+  String _thirdSelectedOption;
+
+  List _time = ["Weekdays", "Weekends"];
+  List getTime;
+  List _timeTable = ["Yes", "No, i will do it myself"];
+
+  List timeFrame = ["7-8am", "10-12pm"];
+  String weekDaysFrame = "Mon Tue Wed Thur Fri";
+  String weekendsFrame = "Sat Sun";
+
+  String convertFirstSelect;
+  String convertSecondSelect;
+  String convertThirdSelect;
 
   Widget _buildHeader() {
     List<UserModel> userModel = userProvider.userModelList;
@@ -57,138 +67,107 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _read({String firstText, String secondText}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        GestureDetector(
-          onTap: _appController.changeToMorning(),
-          child: Container(
-            alignment: Alignment.center,
-            height: 65,
-            width: MediaQuery.of(context).size.height * 0.2,
-            decoration: BoxDecoration(
-              color: _appController.morning.value == true ? buttonColor : white,
-              borderRadius: BorderRadius.circular(30),
+  Widget _firstOption() {
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: _read.map((e) {
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _firstSelectedOption = e;
+                convertFirstSelect = e;
+                print(_firstSelectedOption);
+              });
+            },
+            child: Container(
+              alignment: Alignment.center,
+              height: 65,
+              width: MediaQuery.of(context).size.height * 0.2,
+              decoration: BoxDecoration(
+                color: _firstSelectedOption == e ? buttonColor : white,
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: CustomText(
+                text: e,
+                size: 14,
+                color: _firstSelectedOption == e ? white : buttonColor,
+                weight: FontWeight.w500,
+              ),
             ),
-            child: CustomText(
-              text: firstText,
-              size: 14,
-              color: _appController.morning.value ? white : buttonColor,
-              weight: FontWeight.w500,
-            ),
-          ),
-        ),
-        GestureDetector(
-          onTap: _appController.changeToEvening(),
-          child: Container(
-            alignment: Alignment.center,
-            height: 65,
-            width: MediaQuery.of(context).size.height * 0.2,
-            decoration: BoxDecoration(
-              color: _appController.evening.value ? buttonColor : white,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: CustomText(
-              text: secondText,
-              size: 14,
-              color: _appController.evening.value ? white : buttonColor,
-              weight: FontWeight.w500,
-            ),
-          ),
-        )
-      ],
+          );
+        }).toList(),
+      ),
     );
   }
 
-  Widget _time({String firstText, String secondText}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        GestureDetector(
-          onTap: _appController.changeToWeekdays(),
-          child: Container(
-            alignment: Alignment.center,
-            height: 65,
-            width: MediaQuery.of(context).size.height * 0.2,
-            decoration: BoxDecoration(
-              color:
-                  _appController.weekdays.value == true ? buttonColor : white,
-              borderRadius: BorderRadius.circular(30),
+  Widget _secondOption() {
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: _time.map((e) {
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                convertSecondSelect = e;
+                _secondSelectedOption = e;
+                print(_secondSelectedOption);
+              });
+            },
+            child: Container(
+              alignment: Alignment.center,
+              height: 65,
+              width: MediaQuery.of(context).size.height * 0.2,
+              decoration: BoxDecoration(
+                color: _secondSelectedOption == e ? buttonColor : white,
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: CustomText(
+                text: e,
+                size: 14,
+                color: _secondSelectedOption == e ? white : buttonColor,
+                weight: FontWeight.w500,
+              ),
             ),
-            child: CustomText(
-              text: firstText,
-              size: 14,
-              color: _appController.weekdays.value ? white : buttonColor,
-              weight: FontWeight.w500,
-            ),
-          ),
-        ),
-        GestureDetector(
-          onTap: _appController.changeToWeekends(),
-          child: Container(
-            alignment: Alignment.center,
-            height: 65,
-            width: MediaQuery.of(context).size.height * 0.2,
-            decoration: BoxDecoration(
-              color: _appController.weekends.value ? buttonColor : white,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: CustomText(
-              text: secondText,
-              size: 14,
-              color: _appController.weekends.value ? white : buttonColor,
-              weight: FontWeight.w500,
-            ),
-          ),
-        )
-      ],
+          );
+        }).toList(),
+      ),
     );
   }
 
-  Widget _timetable({String firstText, String secondText}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        GestureDetector(
-          onTap: _appController.changeToYes(),
-          child: Container(
-            alignment: Alignment.center,
-            height: 65,
-            width: MediaQuery.of(context).size.height * 0.2,
-            decoration: BoxDecoration(
-              color: _appController.yes.value == true ? buttonColor : white,
-              borderRadius: BorderRadius.circular(30),
+  Widget _thirdOption() {
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: _timeTable.map((e) {
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _thirdSelectedOption = e;
+              });
+            },
+            child: Container(
+              alignment: Alignment.center,
+              height: 65,
+              width: MediaQuery.of(context).size.height * 0.2,
+              decoration: BoxDecoration(
+                color: _thirdSelectedOption == e ? buttonColor : white,
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: CustomText(
+                text: e,
+                size: 14,
+                color: _thirdSelectedOption == e ? white : buttonColor,
+                weight: FontWeight.w500,
+              ),
             ),
-            child: CustomText(
-              text: firstText,
-              size: 14,
-              color: _appController.yes.value ? white : buttonColor,
-              weight: FontWeight.w500,
-            ),
-          ),
-        ),
-        GestureDetector(
-          onTap: _appController.changeToNo(),
-          child: Container(
-            alignment: Alignment.center,
-            height: 65,
-            width: MediaQuery.of(context).size.height * 0.2,
-            decoration: BoxDecoration(
-              color: _appController.no.value ? buttonColor : white,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: CustomText(
-              text: secondText,
-              size: 14,
-              color: _appController.no.value ? white : buttonColor,
-              weight: FontWeight.w500,
-            ),
-          ),
-        )
-      ],
+          );
+        }).toList(),
+      ),
     );
   }
+
+  // bool _selectedOptions = false;
 
   @override
   Widget build(BuildContext context) {
@@ -204,105 +183,119 @@ class _HomePageState extends State<HomePage> {
             Container(
                 height: MediaQuery.of(context).size.height * 0.2,
                 child: _buildHeader()),
-            Obx(
-              () => Container(
-                color: backgroundColor,
-                height: MediaQuery.of(context).size.height * 0.8,
-                child: Column(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 32, left: 24, right: 24),
-                      height: 120,
-                      width: double.infinity,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomText(
-                              text: "When best do you read?",
-                              size: 16,
-                              color: primaryTextColor,
-                              weight: FontWeight.w500),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          _read(firstText: "Morning", secondText: "Evening"),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 50,
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20),
-                      height: 120,
-                      width: double.infinity,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomText(
-                              text: "Choose Preferable time",
-                              size: 16,
-                              color: primaryTextColor,
-                              weight: FontWeight.w500),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          _time(firstText: "Weekdays", secondText: "Weekends")
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 50,
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20),
-                      height: MediaQuery.of(context).size.height * 0.2,
-                      width: double.infinity,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomText(
-                              text:
-                                  "Would you like us to help you curate your timetable?",
-                              size: 16,
-                              color: primaryTextColor,
-                              weight: FontWeight.w500),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          _timetable(
-                              firstText: "Yes",
-                              secondText: "No, i will do it myself")
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (ctx) => PageViewScreen()));
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 60,
-                        width: double.infinity,
-                        margin: EdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                          color: buttonColor,
-                          borderRadius: BorderRadius.circular(8),
+            Container(
+              color: backgroundColor,
+              height: MediaQuery.of(context).size.height * 0.8,
+              child: Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top: 32, left: 24, right: 24),
+                    height: 120,
+                    width: double.infinity,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                            text: "When best do you read?",
+                            size: 16,
+                            color: primaryTextColor,
+                            weight: FontWeight.w500),
+                        SizedBox(
+                          height: 20,
                         ),
-                        child: CustomText(
-                          text: "Done",
-                          size: 17,
-                          weight: FontWeight.w400,
-                          color: white,
+                        _firstOption(),
+                        // _read(firstText: "Morning", secondText: "Evening"),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 50,
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    height: 120,
+                    width: double.infinity,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                            text: "Choose Preferable time",
+                            size: 16,
+                            color: primaryTextColor,
+                            weight: FontWeight.w500),
+                        SizedBox(
+                          height: 20,
                         ),
+                        _secondOption(),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 50,
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    height: MediaQuery.of(context).size.height * 0.2,
+                    width: double.infinity,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                            text:
+                                "Would you like us to help you curate your timetable?",
+                            size: 16,
+                            color: primaryTextColor,
+                            weight: FontWeight.w500),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        _thirdOption(),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // Navigator.of(context).push(MaterialPageRoute(
+                      //     builder: (ctx) => PageViewScreen()));
+                      setState(() {
+                        if (convertFirstSelect == _read[0]) {
+                          return convertFirstSelect = timeFrame[0];
+                        } else if (convertFirstSelect == _read[1]) {
+                          return convertFirstSelect = timeFrame[1];
+                        }
+
+                        if (convertSecondSelect == _time[0]) {
+                          return convertSecondSelect = weekDaysFrame;
+                        } else if (convertSecondSelect == _time[1]) {
+                          return convertSecondSelect = weekendsFrame;
+                        }
+
+                        print(convertSecondSelect);
+
+                        print(convertFirstSelect);
+                      });
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 60,
+                      width: double.infinity,
+                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: buttonColor,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: CustomText(
+                        text: "Done",
+                        size: 17,
+                        weight: FontWeight.w400,
+                        color: white,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],

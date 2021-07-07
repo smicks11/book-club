@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 
 class AppController extends GetxController {
   //read
-  RxBool morning = true.obs;
+  RxBool morning = false.obs;
   RxBool evening = false.obs;
   //time
   RxBool weekdays = false.obs;
