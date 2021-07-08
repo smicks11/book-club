@@ -37,7 +37,8 @@ class TabSelect extends StatelessWidget {
                 indicator: BubbleTabIndicator(
                     tabBarIndicatorSize: TabBarIndicatorSize.tab,
                     indicatorHeight: 40.0,
-                    indicatorColor: indicatorColor),
+                    indicatorColor: indicatorColor
+                ),
                 labelStyle: TextStyle(
                   fontSize: 12.0,
                 ),

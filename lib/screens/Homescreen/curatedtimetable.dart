@@ -1,6 +1,7 @@
 import 'package:book_club/models/userModel.dart';
 import 'package:book_club/provider/Userprovider.dart';
 import 'package:book_club/provider/onBoarding.dart';
+import 'package:book_club/screens/Auth/SignIn_Page.dart';
 import 'package:book_club/screens/Homescreen/notifications.dart';
 import 'package:book_club/screens/Homescreen/preferences.dart';
 import 'package:book_club/shared/constants.dart';
@@ -107,6 +108,8 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                       GestureDetector(
                                         onTap: () {
                                           FirebaseAuth.instance.signOut();
+                                          Navigator.of(context).pushReplacement(MaterialPageRoute(
+                                              builder: (ctx) => SignInPage()));
                                         },
                                         child: CircleAvatar(
                                           backgroundColor: Colors.white,

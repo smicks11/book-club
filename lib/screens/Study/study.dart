@@ -12,6 +12,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
 
 class Study extends StatefulWidget {
   const Study({Key key}) : super(key: key);
@@ -19,26 +20,32 @@ class Study extends StatefulWidget {
   @override
   _StudyState createState() => _StudyState();
 
-
-
 }
 
-class _StudyState extends State<Study> {
+class _StudyState extends State<Study> with SingleTickerProviderStateMixin{
 
   @override
+
+  TabController _tabController;
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<StudyProvider>(context, listen: false).getTutorial(context);
     });
+    _tabController = TabController(length: 2, vsync: this);
     super.initState();
   }
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+  final GlobalKey<FormState> _form1Key = GlobalKey<FormState>();
   String courseCode = 'CSC 320';
   String location;
   var datTime = 'Saturday';
   void validation() async {
-    final FormState _form = _formKey.currentState;
+    final FormState _form = _form1Key.currentState;
     await Firebase.initializeApp();
       try {
         FirebaseFirestore.instance.collection("Tutorial").add({
@@ -258,18 +265,64 @@ class _StudyState extends State<Study> {
               SizedBox(
                 height: 24,
               ),
-              TabSelect(
-                firstTab: 'Tutorials',
-                secondTab: 'Study Groups',
-                bdgColor: buttonColor,
-                indicatorColor: Colors.white,
-                labelColor: buttonColor,
-                inactiveColor: Colors.white,
+              Container(
+                height: 50.0,
+                margin: const EdgeInsets.symmetric(horizontal: 52),
+                decoration: BoxDecoration(
+                  color: buttonColor,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: TabBar(
+                    onTap: (index) {
+                      _tabController.animateTo(
+                        index,
+                      );
+                    },
+                    controller: _tabController,
+                    indicator: BubbleTabIndicator(
+                        tabBarIndicatorSize: TabBarIndicatorSize.tab,
+                        indicatorHeight: 40.0,
+                        indicatorColor:  Colors.white,),
+                    labelStyle: TextStyle(
+                      fontSize: 12.0,
+                    ),
+                    labelColor: buttonColor,
+                    unselectedLabelColor: Colors.white,
+                    tabs: [
+                      Tab(
+                        text: 'Tutorials',
+                      ),
+                      Tab(
+                        text: 'Study Groups',
+                      ),
+                    ]),
               ),
               SizedBox(
                 height: 24,
               ),
-             tutorialCard(courseCode: study.tutorialModel.courseCode, location: study.tutorialModel.location, date:study.tutorialModel.when,)
+              Expanded(
+                child: TabBarView(
+                    controller: _tabController,
+                    children : [
+                      Container(
+                        child: ListView.builder(
+                          itemCount: study.tutorialModelList.length,
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemBuilder: (context,index){
+                            return tutorialCard(
+                              courseCode: study.tutorialModel.courseCode,
+                              location: study.tutorialModel.location,
+                              date:study.tutorialModel.when,);
+                          },
+                        ),
+                      ),
+                      Container(
+
+                      )
+                    ]
+                ),
+              ),
             ],
           ),
         ),
@@ -293,7 +346,7 @@ class tutorialCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-
+      margin: const EdgeInsets.only(bottom: 24),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(16)),
