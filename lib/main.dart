@@ -1,5 +1,6 @@
 import 'package:book_club/controller/app_controller.dart';
 import 'package:book_club/provider/AuthenticationProvider.dart';
+import 'package:book_club/provider/StudyProvider.dart';
 import 'package:book_club/provider/Userprovider.dart';
 import 'package:book_club/provider/onBoarding.dart';
 import 'package:book_club/screens/Auth/SignIn_Page.dart';
@@ -40,7 +41,10 @@ class MyApp extends StatelessWidget {
         ),
         ListenableProvider<TimeTableProvider>(
           create: (ctx) => TimeTableProvider(),
-        )
+        ),
+        ListenableProvider<StudyProvider>(
+          create: (ctx) => StudyProvider(),
+        ),
       ],
       child: StatusbarzCapturer(
         child: MaterialApp(

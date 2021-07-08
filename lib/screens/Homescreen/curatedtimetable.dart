@@ -28,7 +28,6 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
   String selectedDay = 'Mon';
 
   List timetable = [];
-
   StateSetter ttTable;
 
   @override
@@ -36,6 +35,7 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
     getTimetable();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserProvider>(context, listen: false).getUserData(context);
+      //Provider.of<TimeTableProvider>(context, listen: false).getStudyTimeTable(context);
     });
     super.initState();
   }
@@ -52,8 +52,8 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
 
   @override
   Widget build(BuildContext context) {
-    timeTableProvider = Provider.of<TimeTableProvider>(context);
     final user = Provider.of<UserProvider>(context, listen: true);
+    final study = Provider.of<TimeTableProvider>(context, listen: true);
     return Scaffold(
       backgroundColor: buttonColor,
       body: SafeArea(
@@ -136,8 +136,7 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
-                                  children: (user.userModel.readingDays ==
-                                          'weekends')
+                                  children: (user.userModel.readingDays.contains('weekend'))
                                       ? weekends
                                           .map((e) => GestureDetector(
                                                 onTap: () {
@@ -203,7 +202,10 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(12)),
-                            child: Container()
+                            child: Timetable(
+                              course: '',
+                              time: 'adf',
+                            ),
                             // child: Row(
                             //     crossAxisAlignment: CrossAxisAlignment.center,
                             //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,

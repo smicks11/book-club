@@ -29,7 +29,6 @@ class _HomePageState extends State<HomePage> {
   List getTime;
   List _timeTable = ["Yes", "No, i will do it myself"];
 
-  List timeFrame = ["7-8am", "10-12pm"];
   String weekDaysFrame = "Mon Tue Wed Thur Fri";
   String weekendsFrame = "Sat Sun";
 
