@@ -1,4 +1,4 @@
-import 'package:book_club/screens/SignUp_Page.dart';
+import 'package:book_club/screens/Auth/SignUp_Page.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
 import 'package:firebase_auth/firebase_auth.dart';

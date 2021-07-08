@@ -127,7 +127,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   children: [
                     Container(
                       alignment: Alignment.center,
-                      height: MediaQuery.of(context).size.height * 0.2,
+                      height: 100,
                       width: double.infinity,
                       child: CustomText(
                         text: "Sign Up",
@@ -137,7 +137,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                     Container(
-                      height: MediaQuery.of(context).size.height * 0.6,
                       width: double.infinity,
                       margin: EdgeInsets.symmetric(horizontal: 20.0),
                       child: Column(
@@ -299,18 +298,18 @@ class _SignUpPageState extends State<SignUpPage> {
                         ],
                       ),
                     ),
+                    SizedBox(height: 80,),
                     GestureDetector(
                       onTap: () async {
                         validation();
-                        // context.read<AuthenticationService>().signUp(
-                        //       email: emailController.text.trim(),
-                        //       password: passwordController.text.trim(),
-                        //     );
                       },
-                      child: button(text:'Sign Up'),
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 24),
+                          child: button(text:'Sign Up')
+                      ),
                     ),
                     Container(
-                      height: MediaQuery.of(context).size.height * 0.1,
+                      height: 100,
                       width: double.infinity,
                       margin: EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
