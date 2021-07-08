@@ -1,3 +1,4 @@
+ import 'package:book_club/models/timetable.dart';
 import 'package:book_club/provider/onBoarding.dart';
 import 'package:book_club/screens/Homescreen/notifications.dart';
 import 'package:book_club/screens/Homescreen/preferences.dart';
@@ -24,27 +25,39 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
   List days = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
   String selectedDay = 'Mon';
 
-  List timetable = [];
+  List<TimeTableModel> timetable = [];
 
   @override
   void initState() {
-    getTimetable();
+    getTimetable().then((List list) {
+      setState(() {
+        timetable = list;
+      });
+    });
     super.initState();
   }
 
-  getTimetable() async {
-    final timetabless = FirebaseFirestore.instance.collection('Timetable');
+  Future<List> getTimetable() async {
+    List timetableList = [];
+    final timetables = FirebaseFirestore.instance.collection('Timetable');
+    timetables.get().then((querySnapshot) {
+      querySnapshot.docs.forEach((result) {
+        //return timetableList[result.data()];
+        return result.data()['Morning'];
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     timeTableProvider = Provider.of<TimeTableProvider>(context);
 
-    timeTableProvider.getTimeTableData();
+   //timeTableProvider.getTimeTableData();
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: buttonColor,
       body: SafeArea(
         child: Container(
+          color: backgroundColor,
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -159,7 +172,7 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               Timetable(
-                                course: 'CSC 302',
+                                course: '${timetable}',
                                 time: '10 AM - 11 AM',
                               ),
                               Container(

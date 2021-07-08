@@ -1,6 +1,7 @@
 import 'package:book_club/models/userModel.dart';
 import 'package:book_club/provider/Userprovider.dart';
 import 'package:book_club/screens/Homescreen/curatedtimetable.dart';
+import 'package:book_club/screens/pageview.dart';
 // import 'package:book_club/screens/pageview.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
@@ -260,24 +261,7 @@ class _HomePageState extends State<HomePage> {
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (ctx) => CuratedTimeTable()));
-                      setState(() {
-                        if (convertFirstSelect == _read[0]) {
-                          return convertFirstSelect = timeFrame[0];
-                        } else if (convertFirstSelect == _read[1]) {
-                          return convertFirstSelect = timeFrame[1];
-                        }
-
-                        if (convertSecondSelect == _time[0]) {
-                          return convertSecondSelect = weekDaysFrame;
-                        } else if (convertSecondSelect == _time[1]) {
-                          return convertSecondSelect = weekendsFrame;
-                        }
-
-                        print(convertSecondSelect);
-
-                        print(convertFirstSelect);
-                      });
+                          builder: (ctx) => PageViewScreen()));
                     },
                     child: Container(
                       alignment: Alignment.center,

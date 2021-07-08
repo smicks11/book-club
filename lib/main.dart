@@ -1,6 +1,7 @@
 import 'package:book_club/controller/app_controller.dart';
 import 'package:book_club/provider/AuthenticationProvider.dart';
 import 'package:book_club/provider/Userprovider.dart';
+import 'package:book_club/provider/onBoarding.dart';
 import 'package:book_club/screens/Auth/SignIn_Page.dart';
 import 'package:book_club/screens/homepage.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
@@ -36,6 +37,9 @@ class MyApp extends StatelessWidget {
         ),
         ListenableProvider<UserProvider>(
           create: (ctx) => UserProvider(),
+        ),
+        ListenableProvider<TimeTableProvider>(
+          create: (ctx) => TimeTableProvider(),
         )
       ],
       child: StatusbarzCapturer(

@@ -14,8 +14,7 @@ class UserProvider with ChangeNotifier{
     List<UserModel> newUserList = [];
     User currentUser = FirebaseAuth.instance.currentUser;
 
-    QuerySnapshot userSnapShots =
-        await FirebaseFirestore.instance.collection("User").get();
+    QuerySnapshot userSnapShots = await FirebaseFirestore.instance.collection("User").get();
     userSnapShots.docs.forEach((element) {
       if (currentUser.uid == element.get("UserId")) {
         userModel = UserModel(
