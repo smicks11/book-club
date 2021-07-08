@@ -1,4 +1,6 @@
  import 'package:book_club/models/timetable.dart';
+import 'package:book_club/models/userModel.dart';
+import 'package:book_club/provider/Userprovider.dart';
 import 'package:book_club/provider/onBoarding.dart';
 import 'package:book_club/screens/Homescreen/notifications.dart';
 import 'package:book_club/screens/Homescreen/preferences.dart';
@@ -25,15 +27,18 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
   List days = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
   String selectedDay = 'Mon';
 
-  List<TimeTableModel> timetable = [];
+  List timetable = [];
+
+  StateSetter ttTable;
 
   @override
   void initState() {
-    getTimetable().then((List list) {
-      setState(() {
-        timetable = list;
-      });
+    getTimetable();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      Provider.of<UserProvider>(context, listen: false)
+          .getUserData(context);
     });
+
     super.initState();
   }
 
@@ -41,17 +46,19 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
     List timetableList = [];
     final timetables = FirebaseFirestore.instance.collection('Timetable');
     timetables.get().then((querySnapshot) {
-      querySnapshot.docs.forEach((result) {
-        //return timetableList[result.data()];
-        return result.data()['Morning'];
-      });
+      final timeTableData = querySnapshot.docs.map((doc) => doc.data()['Morning']).toList();
+      timetableList.add(timeTableData);
+      print(timetableList);
+    });
+    ttTable(() {
+      timetable = timetableList;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     timeTableProvider = Provider.of<TimeTableProvider>(context);
-
+    final user = Provider.of<UserProvider>(context, listen: true);
    //timeTableProvider.getTimeTableData();
     return Scaffold(
       backgroundColor: buttonColor,
@@ -129,8 +136,9 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
-                                  children: days
-                                      .map((e) => GestureDetector(
+                                  children:
+                                  days.map((e) =>
+                                      GestureDetector(
                                             onTap: () {
                                               setState(() {
                                                 selectedDay = e;
@@ -146,7 +154,7 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                                       BorderRadius.circular(
                                                           32.0)),
                                               child: CustomText(
-                                                  text: e,
+                                                  text: (user.userModel.readingDays == 'weekends') ? e[0] : e[2],
                                                   size: 13,
                                                   color: white,
                                                   letterspacing: 2,
@@ -172,7 +180,7 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               Timetable(
-                                course: '${timetable}',
+                                course: '${user.userModel.readingDays}',
                                 time: '10 AM - 11 AM',
                               ),
                               Container(

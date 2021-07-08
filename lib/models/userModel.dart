@@ -6,7 +6,9 @@ class UserModel with ChangeNotifier {
   final String level;
   final String email;
   final String dept;
+  final String readingSession;
+  final String readingDays;
 
   UserModel(
-      {this.fullName, this.matricNumber, this.level, this.email, this.dept});
+      {this.fullName, this.readingDays, this.readingSession, this.matricNumber, this.level, this.email, this.dept});
 }

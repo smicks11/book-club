@@ -5,6 +5,7 @@ import 'package:book_club/screens/pageview.dart';
 // import 'package:book_club/screens/pageview.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -53,7 +54,7 @@ class _HomePageState extends State<HomePage> {
           return Column(
             children: [
               CustomText(
-                  text: "Hi ${widget.name.split(" ")[0]} 🥳",
+                  text: "Hi ${e.fullName.split(" ")[0]} 🥳",
                   size: 20,
                   color: white,
                   weight: FontWeight.w500),
@@ -173,9 +174,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    userProvider = Provider.of<UserProvider>(context);
+    userProvider = Provider.of<UserProvider>(context, listen: true);
 
-    userProvider.getUserData();
+    userProvider.getUserData(context);
     return Material(
       color: buttonColor,
       child: Container(
@@ -260,6 +261,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   GestureDetector(
                     onTap: () {
+                      //FirebaseAuth.instance.signOut();
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (ctx) => PageViewScreen()));
                     },

@@ -3,27 +3,29 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
-class UserProvider with ChangeNotifier{
-   List<UserModel> userModelList = [];
+class UserProvider with ChangeNotifier {
+  List<UserModel> userModelList = [];
 
   UserModel userModel;
 
   //Get User Data From Firebase
 
-  Future<void> getUserData() async {
+  Future<void> getUserData(BuildContext context) async {
     List<UserModel> newUserList = [];
     User currentUser = FirebaseAuth.instance.currentUser;
 
-    QuerySnapshot userSnapShots = await FirebaseFirestore.instance.collection("User").get();
+    QuerySnapshot userSnapShots =
+        await FirebaseFirestore.instance.collection("User").get();
     userSnapShots.docs.forEach((element) {
       if (currentUser.uid == element.get("UserId")) {
         userModel = UserModel(
-          fullName: element.get("FullName"),
-          dept: element.get("Dept"),
-          level: element.get("Level"),
-          matricNumber: element.get("MatricNumber"),
-          email: element.get("UserEmail"),
-        );
+            fullName: element.get("FullName"),
+            dept: element.get("Dept"),
+            level: element.get("Level"),
+            matricNumber: element.get("MatricNumber"),
+            email: element.get("UserEmail"),
+            readingDays: element.get("readingDays"),
+            readingSession: element.get('readingSession'));
         newUserList.add(userModel);
       }
       userModelList = newUserList;
