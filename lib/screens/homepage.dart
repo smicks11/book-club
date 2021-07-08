@@ -1,5 +1,6 @@
 import 'package:book_club/models/userModel.dart';
 import 'package:book_club/provider/Userprovider.dart';
+import 'package:book_club/screens/Homescreen/curatedtimetable.dart';
 // import 'package:book_club/screens/pageview.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
@@ -258,8 +259,8 @@ class _HomePageState extends State<HomePage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Navigator.of(context).push(MaterialPageRoute(
-                      //     builder: (ctx) => PageViewScreen()));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (ctx) => CuratedTimeTable()));
                       setState(() {
                         if (convertFirstSelect == _read[0]) {
                           return convertFirstSelect = timeFrame[0];
