@@ -1,14 +1,18 @@
+import 'package:book_club/provider/onBoarding.dart';
 import 'package:book_club/screens/Homescreen/notifications.dart';
 import 'package:book_club/screens/Homescreen/preferences.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
 import 'package:book_club/shared/tab.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hex_color/flutter_hex_color.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+
+
 
 class CuratedTimeTable extends StatefulWidget {
-  
   const CuratedTimeTable({Key key}) : super(key: key);
 
   @override
@@ -16,15 +20,31 @@ class CuratedTimeTable extends StatefulWidget {
 }
 
 class _CuratedTimeTableState extends State<CuratedTimeTable> {
+  TimeTableProvider timeTableProvider;
   List days = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
   String selectedDay = 'Mon';
+
+  List timetable = [];
+
+  @override
+  void initState() {
+    getTimetable();
+    super.initState();
+  }
+
+  getTimetable() async {
+    final timetabless = FirebaseFirestore.instance.collection('Timetable');
+  }
+
   @override
   Widget build(BuildContext context) {
+    timeTableProvider = Provider.of<TimeTableProvider>(context);
+
+    timeTableProvider.getTimeTableData();
     return Scaffold(
-      backgroundColor: buttonColor,
+      backgroundColor: backgroundColor,
       body: SafeArea(
         child: Container(
-          color: backgroundColor,
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
