@@ -8,6 +8,7 @@ import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
 import 'package:book_club/shared/tab.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hex_color/flutter_hex_color.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -37,6 +38,8 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
     WidgetsBinding.instance.addPostFrameCallback((_){
       Provider.of<UserProvider>(context, listen: false)
           .getUserData(context);
+      Provider.of<TimeTableProvider>(context, listen: false)
+          .getTimeTableData(context);
     });
 
     super.initState();
@@ -46,20 +49,22 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
     List timetableList = [];
     final timetables = FirebaseFirestore.instance.collection('Timetable');
     timetables.get().then((querySnapshot) {
-      final timeTableData = querySnapshot.docs.map((doc) => doc.data()['Morning']).toList();
-      timetableList.add(timeTableData);
-      print(timetableList);
+      final timeTableData = querySnapshot.docs.map((doc) =>
+         doc.data()
+      );
+      print(timeTableData);
     });
-    ttTable(() {
-      timetable = timetableList;
-    });
+    // ttTable(() {
+    //   timetable = timetableList;
+    // });
+    // print(timetable);
   }
 
   @override
   Widget build(BuildContext context) {
     timeTableProvider = Provider.of<TimeTableProvider>(context);
     final user = Provider.of<UserProvider>(context, listen: true);
-   //timeTableProvider.getTimeTableData();
+    final timeTables = Provider.of<TimeTableProvider>(context, listen: true);
     return Scaffold(
       backgroundColor: buttonColor,
       body: SafeArea(
@@ -110,12 +115,17 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                       SizedBox(
                                         width: 10.0,
                                       ),
-                                      CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        child: Text(
-                                          'IA',
-                                          style: TextStyle(
-                                              color: buttonColor, fontSize: 14),
+                                      GestureDetector(
+                                        onTap: (){
+                                          FirebaseAuth.instance.signOut();
+                                        },
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.white,
+                                          child: Text(
+                                            'IA',
+                                            style: TextStyle(
+                                                color: buttonColor, fontSize: 14),
+                                          ),
                                         ),
                                       )
                                     ],
@@ -134,10 +144,8 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 20),
                                 child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children:
-                                  days.map((e) =>
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: days.map((e) =>
                                       GestureDetector(
                                             onTap: () {
                                               setState(() {
@@ -180,7 +188,7 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               Timetable(
-                                course: '${user.userModel.readingDays}',
+                                course: 'ad',
                                 time: '10 AM - 11 AM',
                               ),
                               Container(

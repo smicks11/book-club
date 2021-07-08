@@ -1,37 +1,32 @@
 import 'package:book_club/models/timetable.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 class TimeTableProvider with ChangeNotifier {
-  List<TimeTableModel> timeTableModelList = [];
+  List<TimeTableModel> ttModelList = [];
 
-  TimeTableModel timeTableModel;
+  TimeTableModel ttModel;
 
   //Get User Data From Firebase
 
-  // Future<void> getTimeTableData() async {
-  //   List<TimeTableModel> newTimeTableList = [];
-  //   User currentUser = FirebaseAuth.instance.currentUser;
-  //
-  //   QuerySnapshot userSnapShots = await FirebaseFirestore.instance.collection("User").get();
-  //   QuerySnapshot timetableSnapShots = await FirebaseFirestore.instance.collection("Timetable").get();
-  //   userSnapShots.docs.forEach((element) {
-  //     if (currentUser.uid == element.get("UserId")) {
-  //       timeTableModel = TimeTableModel(
-  //         monday: element.get("Monday"),
-  //         tuesday: element.get("tuesday"),
-  //       );
-  //       newTimeTableList.add(timeTableModel);
-  //     }
-  //     timeTableModelList = newTimeTableList;
-  //     // print(userModelList);
-  //   });
-  //
-  //   notifyListeners();
-  // }
+  Future<void> getTimeTableData(BuildContext context) async {
+    List<TimeTableModel> newttList = [];
+    // User currentUser = FirebaseAuth.instance.currentUser;
+
+    QuerySnapshot timetableSnapShots = await FirebaseFirestore.instance.collection("Timetable").get();
+        timetableSnapShots.docs.forEach((element) {
+          Map<String, dynamic> data = new Map<String, dynamic>.from(json.decode(response.body));
+          ttModel = TimeTableModel(
+            study: element.get("monday"),
+        );
+        newttList.add(ttModel);
+      ttModelList = newttList;
+    }) as Map;
+
+    notifyListeners();
+  }
 
   List<TimeTableModel> get getTimeTableModelList {
-    return timeTableModelList;
+    return ttModelList;
   }
 }
