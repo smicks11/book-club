@@ -29,7 +29,7 @@ class _SignInPageState extends State<SignInPage> {
           passwordL = '';
         });
       
-        print(result.user.uid);
+        print(result.user);
       } on PlatformException catch (e) {
         print(e.message);
         // ignore: deprecated_member_use
