@@ -38,10 +38,22 @@ class StudyProvider with ChangeNotifier {
   Future<void> getStudyGroup (BuildContext context) async {
     List<StudyGroupModel> newStudyGroupList = [];
     User currentUser = FirebaseAuth.instance.currentUser;
-
+    FirebaseAuth.instance
+        .authStateChanges()
+        .listen((User user) {
+      if (user == null) {
+        print('User is currently signed out!');
+        print(user.uid);
+      } else {
+        print('User is signed in!');
+        print(user.uid);
+      }
+    });
     QuerySnapshot studyGroupSnapShots = await FirebaseFirestore.instance.collection("studyGroup")
       .where('userID', isEqualTo: currentUser.uid)
         .get();
+
+    print(currentUser.uid);
     studyGroupSnapShots.docs.forEach((element) {
       studyGroupModel = StudyGroupModel(
         courseCode: element.get("courseCode"),
