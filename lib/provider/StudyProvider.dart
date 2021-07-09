@@ -37,10 +37,11 @@ class StudyProvider with ChangeNotifier {
 
   Future<void> getStudyGroup (BuildContext context) async {
     List<StudyGroupModel> newStudyGroupList = [];
-    //User currentUser = FirebaseAuth.instance.currentUser;
+    User currentUser = FirebaseAuth.instance.currentUser;
 
-    QuerySnapshot studyGroupSnapShots =
-    await FirebaseFirestore.instance.collection("studyGroup").get().where('age', isGreaterThan: 20);
+    QuerySnapshot studyGroupSnapShots = await FirebaseFirestore.instance.collection("studyGroup")
+      .where('userID', isEqualTo: currentUser.uid)
+        .get();
     studyGroupSnapShots.docs.forEach((element) {
       studyGroupModel = StudyGroupModel(
         courseCode: element.get("courseCode"),

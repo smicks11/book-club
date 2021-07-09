@@ -495,7 +495,7 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin{
                                 })
                             )
                         ),
-                        body: user.userModel.userID.contains(study.studyGroupModel.userID) ? Container(
+                        body: Container(
                           child: ListView.builder(
                             itemCount: study.studyGroupModelList.length,
                             scrollDirection: Axis.vertical,
@@ -507,9 +507,7 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin{
                                 date:study.studyGroupModel.when,);
                             },
                           ),
-                        ) : Container(
-                          child: Text('${user.userModel.userID}'),
-                        ),
+                        )
                       )
                     ]
                 ),
