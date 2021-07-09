@@ -205,29 +205,32 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(12)),
-                            child: Timetable(
-                              course: '',
-                              time: 'adf',
-                            ),
-                            // child: Row(
-                            //     crossAxisAlignment: CrossAxisAlignment.center,
-                            //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            //     children: timetable.map((e) => Timetable(
-                            //      course: e['morning']['courseCode'],
-                            //    time: '05 AM - 07 PM',
-                            //      )
-                            //                     )
-                            //                 .toList()
 
-                            //     //
-                            //     // Container(
-                            //     //   height: 60,
-                            //     //   width: 0.6,
-                            //     //   color: HexColor('E4E7F1'),
-                            //     // ),
-                            //     //
+                            child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Timetable(
+                                    course: 'CSC 203',
+                                    time: '05 AM - 07 PM',
+                                  ),
+                                  Container(
+                                    height: 60,
+                                    width: 0.6,
+                                    color: HexColor('E4E7F1'),
+                                  ),
+                                  Timetable(
+                                    course: 'CSC 203',
+                                    time: '05 AM - 07 PM',
+                                  )
+                                ]
 
-                            //     ),
+
+                                //
+
+                                //
+
+                                ),
                             ),
                       )
                     ],
