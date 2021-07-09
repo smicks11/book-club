@@ -29,11 +29,11 @@ String fullName;
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 // final AuthServices _auth = AuthServices();
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-String p =
-    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+String p = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
 
 String selectedValue;
 String selectedValueLevel;
+bool admin = false;
 
 class _SignUpPageState extends State<SignUpPage> {
   void validation() async {
@@ -53,10 +53,12 @@ class _SignUpPageState extends State<SignUpPage> {
           "UserId": result.user.uid,
           "UserEmail": email,
           "FullName": fullName,
-          "MatricNumber": matricNumber,
           "Password": password,
           "Dept": dept,
           "Level": level,
+          "readingDays" : "",
+          "readingSession" : "",
+          "admin" : admin
         });
         Navigator.pushAndRemoveUntil(context,
             MaterialPageRoute(builder: (ctx) => HomePage(name:fullName)), (route) => false);

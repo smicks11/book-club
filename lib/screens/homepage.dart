@@ -19,7 +19,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   UserProvider userProvider;
-
   List _read = ["Morning", "Evening"];
   String _firstSelectedOption;
   String _secondSelectedOption;
@@ -28,13 +27,19 @@ class _HomePageState extends State<HomePage> {
   List _time = ["Weekdays", "Weekends"];
   List getTime;
   List _timeTable = ["Yes", "No, i will do it myself"];
-
   String weekDaysFrame = "Mon Tue Wed Thur Fri";
   String weekendsFrame = "Sat Sun";
 
   String convertFirstSelect;
   String convertSecondSelect;
   String convertThirdSelect;
+
+  void initState() {
+    print(widget.name);
+    super.initState();
+  }
+
+
 
   Widget _buildHeader() {
     List<UserModel> userModel = userProvider.userModelList;

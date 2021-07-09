@@ -22,9 +22,10 @@ class UserProvider with ChangeNotifier {
             fullName: element.get("FullName"),
             dept: element.get("Dept"),
             level: element.get("Level"),
-            matricNumber: element.get("MatricNumber"),
+            userID: element.get("UserId"),
             email: element.get("UserEmail"),
             readingDays: element.get("readingDays"),
+            admin:element.get("admin"),
             readingSession: element.get('readingSession'));
         newUserList.add(userModel);
       }

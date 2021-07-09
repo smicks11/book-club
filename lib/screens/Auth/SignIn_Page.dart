@@ -14,14 +14,11 @@ class SignInPage extends StatefulWidget {
 String p = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
 String passwordL;
 String emailL;
-final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+final GlobalKey<FormState> _signKey = GlobalKey<FormState>();
 
 class _SignInPageState extends State<SignInPage> {
   Future<void> validation() async {
-    //  setState(() {
-    //     loading = true;
-    //   });
-    final FormState _form = _formKey.currentState;
+    final FormState _form = _signKey.currentState;
     if (!_form.validate()) {
       try {
         UserCredential result = await FirebaseAuth.instance
@@ -85,7 +82,7 @@ class _SignInPageState extends State<SignInPage> {
     return Scaffold(
       body: SafeArea(
         child: Form(
-          key: _formKey,
+          key: _signKey,
           child: Container(
             height: double.infinity,
             width: double.infinity,
