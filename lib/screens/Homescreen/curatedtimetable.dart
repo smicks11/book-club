@@ -1,4 +1,3 @@
- import 'package:book_club/models/timetable.dart';
 import 'package:book_club/models/userModel.dart';
 import 'package:book_club/provider/Userprovider.dart';
 import 'package:book_club/provider/onBoarding.dart';
@@ -14,8 +13,6 @@ import 'package:flutter_hex_color/flutter_hex_color.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
-
-
 class CuratedTimeTable extends StatefulWidget {
   const CuratedTimeTable({Key key}) : super(key: key);
 
@@ -25,7 +22,9 @@ class CuratedTimeTable extends StatefulWidget {
 
 class _CuratedTimeTableState extends State<CuratedTimeTable> {
   TimeTableProvider timeTableProvider;
-  List days = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
+  List days = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'];
+  List weekdays = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri'];
+  List weekends = ['Sat', 'Sun'];
   String selectedDay = 'Mon';
 
   List timetable = [];
@@ -35,13 +34,9 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
   @override
   void initState() {
     getTimetable();
-    WidgetsBinding.instance.addPostFrameCallback((_){
-      Provider.of<UserProvider>(context, listen: false)
-          .getUserData(context);
-      Provider.of<TimeTableProvider>(context, listen: false)
-          .getTimeTableData(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserProvider>(context, listen: false).getUserData(context);
     });
-
     super.initState();
   }
 
@@ -49,22 +44,16 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
     List timetableList = [];
     final timetables = FirebaseFirestore.instance.collection('Timetable');
     timetables.get().then((querySnapshot) {
-      final timeTableData = querySnapshot.docs.map((doc) =>
-         doc.data()
-      );
-      print(timeTableData);
+      final timeTableData = querySnapshot.docs.map((doc) => doc.data());
+      timetableList.add(timeTableData);
     });
-    // ttTable(() {
-    //   timetable = timetableList;
-    // });
-    // print(timetable);
+    return timetableList;
   }
 
   @override
   Widget build(BuildContext context) {
     timeTableProvider = Provider.of<TimeTableProvider>(context);
     final user = Provider.of<UserProvider>(context, listen: true);
-    final timeTables = Provider.of<TimeTableProvider>(context, listen: true);
     return Scaffold(
       backgroundColor: buttonColor,
       body: SafeArea(
@@ -116,7 +105,7 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                         width: 10.0,
                                       ),
                                       GestureDetector(
-                                        onTap: (){
+                                        onTap: () {
                                           FirebaseAuth.instance.signOut();
                                         },
                                         child: CircleAvatar(
@@ -124,7 +113,8 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                           child: Text(
                                             'IA',
                                             style: TextStyle(
-                                                color: buttonColor, fontSize: 14),
+                                                color: buttonColor,
+                                                fontSize: 14),
                                           ),
                                         ),
                                       )
@@ -144,32 +134,62 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 20),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: days.map((e) =>
-                                      GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                selectedDay = e;
-                                              });
-                                            },
-                                            child: Container(
-                                              padding: const EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                  color: selectedDay == e
-                                                      ? HexColor('001E97')
-                                                      : Colors.transparent,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          32.0)),
-                                              child: CustomText(
-                                                  text: (user.userModel.readingDays == 'weekends') ? e[0] : e[2],
-                                                  size: 13,
-                                                  color: white,
-                                                  letterspacing: 2,
-                                                  weight: FontWeight.w500),
-                                            ),
-                                          ))
-                                      .toList(),
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: (user.userModel.readingDays ==
+                                          'weekends')
+                                      ? weekends
+                                          .map((e) => GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    selectedDay = e;
+                                                  });
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  decoration: BoxDecoration(
+                                                      color: selectedDay == e
+                                                          ? HexColor('001E97')
+                                                          : Colors.transparent,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              32.0)),
+                                                  child: CustomText(
+                                                      text: e,
+                                                      size: 13,
+                                                      color: white,
+                                                      letterspacing: 2,
+                                                      weight: FontWeight.w500),
+                                                ),
+                                              ))
+                                          .toList()
+                                      : weekdays
+                                          .map((e) => GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    selectedDay = e;
+                                                  });
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  decoration: BoxDecoration(
+                                                      color: selectedDay == e
+                                                          ? HexColor('001E97')
+                                                          : Colors.transparent,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              32.0)),
+                                                  child: CustomText(
+                                                      text: e,
+                                                      size: 13,
+                                                      color: white,
+                                                      letterspacing: 2,
+                                                      weight: FontWeight.w500),
+                                                ),
+                                              ))
+                                          .toList(),
                                 )),
                           ],
                         ),
@@ -179,30 +199,31 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                         left: 20,
                         bottom: 0,
                         child: Container(
-                          height: 120,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12)),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Timetable(
-                                course: 'ad',
-                                time: '10 AM - 11 AM',
-                              ),
-                              Container(
-                                height: 60,
-                                width: 0.6,
-                                color: HexColor('E4E7F1'),
-                              ),
-                              Timetable(
-                                course: 'CSC 302',
-                                time: '05 AM - 07 PM',
-                              )
-                            ],
-                          ),
-                        ),
+                            height: 120,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Container()
+                            // child: Row(
+                            //     crossAxisAlignment: CrossAxisAlignment.center,
+                            //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            //     children: timetable.map((e) => Timetable(
+                            //      course: e['morning']['courseCode'],
+                            //    time: '05 AM - 07 PM',
+                            //      )
+                            //                     )
+                            //                 .toList()
+
+                            //     //
+                            //     // Container(
+                            //     //   height: 60,
+                            //     //   width: 0.6,
+                            //     //   color: HexColor('E4E7F1'),
+                            //     // ),
+                            //     //
+
+                            //     ),
+                            ),
                       )
                     ],
                   )),
