@@ -106,15 +106,15 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                         width: 10.0,
                                       ),
                                       GestureDetector(
-                                        onTap: () {
-                                          FirebaseAuth.instance.signOut();
+                                        onTap: () async{
+                                          await FirebaseAuth.instance.signOut();
                                           Navigator.of(context).pushReplacement(MaterialPageRoute(
                                               builder: (ctx) => SignInPage()));
                                         },
                                         child: CircleAvatar(
                                           backgroundColor: Colors.white,
                                           child: Text(
-                                            'IA',
+                                            '${user.userModel.fullName.split("")[0][0]}${user.userModel.fullName.split("")[1][0]}',
                                             style: TextStyle(
                                                 color: buttonColor,
                                                 fontSize: 14),
