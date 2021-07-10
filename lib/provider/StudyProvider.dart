@@ -53,7 +53,14 @@ class StudyProvider with ChangeNotifier {
       .where('userID', isEqualTo: currentUser.uid)
         .get();
 
-    print(currentUser.uid);
+    var collection = FirebaseFirestore.instance.collection('studyGroup');
+    var querySnapshots = await collection.get();
+    for (var snapshot in querySnapshots.docs) {
+      var documentID = snapshot.id;
+      print('this is the document id');
+      print(documentID);
+    }
+
     studyGroupSnapShots.docs.forEach((element) {
       studyGroupModel = StudyGroupModel(
         courseCode: element.get("courseCode"),
@@ -61,12 +68,12 @@ class StudyProvider with ChangeNotifier {
         when: element.get("when"),
         forum: element.get({"comment": "comment", "userID": "userID"}),
         userID: element.get('userID'),
-        
       );
+
       newStudyGroupList.add(studyGroupModel);
 
+
       studyGroupModelList = newStudyGroupList;
-      print(studyGroupModel);
     });
 
     notifyListeners();

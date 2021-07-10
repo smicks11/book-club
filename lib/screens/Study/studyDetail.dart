@@ -1,9 +1,11 @@
+import 'package:book_club/provider/StudyProvider.dart';
 import 'package:book_club/shared/button.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hex_color/flutter_hex_color.dart';
+import 'package:provider/provider.dart';
 
 class StudyDetail extends StatefulWidget {
   final String courseCode;
@@ -22,10 +24,32 @@ class StudyDetail extends StatefulWidget {
 
 class _StudyDetailState extends State<StudyDetail> {
 
+  Future<Uri> createDynamicLink(String id) async {
+
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
+      uriPrefix: 'https://funet.page.link',
+      link: Uri.parse('https://funet.page.link/?id=$id'),
+      androidParameters: AndroidParameters(
+        packageName: 'com.example.book_club',
+        minimumVersion: 1,
+      ),
+      iosParameters: IosParameters(
+        bundleId: 'com.example.book_club',
+        minimumVersion: '1.0.1',
+      ),
+    );
+
+    final ShortDynamicLink shortDynamicLink = await parameters.buildShortLink();
+    final Uri shortUrl = shortDynamicLink.shortUrl;
+    return shortUrl;
+  }
 
 
-  @override
+
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<StudyProvider>(context, listen: false).getStudyGroup(context);
+    });
     super.initState();
   }
   @override
@@ -60,7 +84,7 @@ class _StudyDetailState extends State<StudyDetail> {
                           Spacer(),
                           GestureDetector(
                               onTap: () {
-
+                                //createDynamicLink(id);
                               },
                               child: Icon(
                                 Icons.share,

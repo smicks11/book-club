@@ -6,9 +6,11 @@ import 'package:flutter_hex_color/flutter_hex_color.dart';
 
 class StudyInvite extends StatefulWidget {
   final String id;
+  final String courseCode;
+  final String when;
   const StudyInvite(
       {Key key,
-       this.id})
+       this.id, this.courseCode, this.when})
       : super(key: key);
 
   @override
@@ -45,7 +47,7 @@ class _StudyInviteState extends State<StudyInvite> {
                           )),
                       SizedBox(height: 24),
                       CustomText(
-                          text: 'widget.courseCode',
+                          text: widget.courseCode,
                           size: 24,
                           color: HexColor('FFFFFF')),
                       SizedBox(height: 32),

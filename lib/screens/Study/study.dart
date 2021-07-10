@@ -100,10 +100,11 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
 
       }).then((value) => Provider.of<StudyProvider>(context, listen: false)
           .getStudyGroup(context));
-      Navigator.of(context).pop();
-      var docID = FirebaseFirestore.instance.collection('studyGroup');
-      var documentId = docID.id;
-      createDynamicLink(documentId);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (ctx) =>
+                  StudyDetail(courseCode: courseCode, when: datTime, location: location, )));
       // myDialogBox();
     } on PlatformException catch (e) {
       print(e.message.toString());
