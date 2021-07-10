@@ -20,13 +20,10 @@ class Study extends StatefulWidget {
 
   @override
   _StudyState createState() => _StudyState();
-
 }
 
-class _StudyState extends State<Study> with SingleTickerProviderStateMixin{
-
+class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
   @override
-
   TabController _tabController;
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -42,39 +39,21 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin{
     _tabController.dispose();
     super.dispose();
   }
+
   final GlobalKey<FormState> _form1Key = GlobalKey<FormState>();
   final GlobalKey<FormState> _studyGroupKey = GlobalKey<FormState>();
   String courseCode = 'CSC 320';
   String location;
   var datTime = 'Saturday';
 
-
   void validation() async {
     final FormState _form = _form1Key.currentState;
     await Firebase.initializeApp();
-      try {
-        FirebaseFirestore.instance.collection("Tutorial").add({
-          'courseCode': courseCode,
-          'location' : location,
-          'when' : datTime
-        }).then((value) => print('Created Succesfully'));
-       Navigator.of(context).pop();
-        // myDialogBox();
-      } on PlatformException catch (e) {
-        print(e.message.toString());
-      }
-  }
-
-  void createStudyGroup() async {
-    final FormState _form = _studyGroupKey.currentState;
-    await Firebase.initializeApp();
-    final userData = Provider.of<UserProvider>(context, listen: false);
     try {
-      FirebaseFirestore.instance.collection("studyGroup").add({
-        'userID' : userData.userModel.userID,
+      FirebaseFirestore.instance.collection("Tutorial").add({
         'courseCode': courseCode,
-        'location' : location,
-        'when' : datTime
+        'location': location,
+        'when': datTime
       }).then((value) => print('Created Succesfully'));
       Navigator.of(context).pop();
       // myDialogBox();
@@ -83,15 +62,38 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin{
     }
   }
 
+  void createStudyGroup() async {
+    final FormState _form = _studyGroupKey.currentState;
+    await Firebase.initializeApp();
+    final userData = Provider.of<UserProvider>(context, listen: false);
+    try {
+      FirebaseFirestore.instance.collection("studyGroup").add({
+        'userID': userData.userModel.userID,
+        'courseCode': courseCode,
+        'location': location,
+        'when': datTime
+      }).then((value) => print('Created Succesfully'));
+      Navigator.of(context).pop();
+      // myDialogBox();
+    } on PlatformException catch (e) {
+      print(e.message.toString());
+    }
+  }
 
   StateSetter studyState;
-  List<String> courseList = ["CSC 320", "CSC 310", "CSC 330", "CSC 300", "CSC 220"];
+  List<String> courseList = [
+    "CSC 320",
+    "CSC 310",
+    "CSC 330",
+    "CSC 300",
+    "CSC 220"
+  ];
 
   Widget _buildFields(
       {String labelText,
-        Function validator,
-        Function onChanged,
-        Widget textIcon}) {
+      Function validator,
+      Function onChanged,
+      Widget textIcon}) {
     return Container(
       height: 60,
       width: double.infinity,
@@ -117,6 +119,7 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin{
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     final study = Provider.of<StudyProvider>(context, listen: true);
@@ -158,9 +161,10 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin{
                     },
                     controller: _tabController,
                     indicator: BubbleTabIndicator(
-                        tabBarIndicatorSize: TabBarIndicatorSize.tab,
-                        indicatorHeight: 40.0,
-                        indicatorColor:  Colors.white,),
+                      tabBarIndicatorSize: TabBarIndicatorSize.tab,
+                      indicatorHeight: 40.0,
+                      indicatorColor: Colors.white,
+                    ),
                     labelStyle: TextStyle(
                       fontSize: 12.0,
                     ),
@@ -179,338 +183,627 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin{
                 height: 24,
               ),
               Expanded(
-                child: TabBarView(
-                    controller: _tabController,
-                    children : [
-                      Scaffold(
-                        backgroundColor: backgroundColor,
-                        floatingActionButton: Visibility(
-                          visible: user.userModel.admin == false ? false : true,
-                          child: FloatingActionButton(
-                              backgroundColor: buttonColor,
-                              child: Icon(Icons.add),
-                              elevation: 2.0,
-                              onPressed:  () => showCupertinoModalBottomSheet(
-                                  context: context,
-                                  builder: (context) => StatefulBuilder(builder: (BuildContext context,
-                                      StateSetter myState ) {
+                child: TabBarView(controller: _tabController, children: [
+                  Scaffold(
+                    backgroundColor: backgroundColor,
+                    floatingActionButton: Visibility(
+                      visible: user.userModel.admin == false ? false : true,
+                      child: FloatingActionButton(
+                          backgroundColor: buttonColor,
+                          child: Icon(Icons.add),
+                          elevation: 2.0,
+                          onPressed: () => showCupertinoModalBottomSheet(
+                              context: context,
+                              builder: (context) => StatefulBuilder(builder:
+                                      (BuildContext context,
+                                          StateSetter myState) {
                                     //studyState = setState;
                                     return Material(
                                       child: Container(
-                                          height: MediaQuery.of(context).size.height * 0.8,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.8,
                                           color: Colors.white,
-                                          child : Padding(
+                                          child: Padding(
                                             padding: const EdgeInsets.all(24.0),
                                             child: ListView(
                                               children: [
                                                 Row(
                                                   children: [
                                                     Align(
-                                                      alignment: Alignment.topLeft,
+                                                      alignment:
+                                                          Alignment.topLeft,
                                                       child: GestureDetector(
-                                                          onTap: () => Navigator.of(context).pop(),
-                                                          child: Icon(Icons.arrow_back)
-                                                      ),
+                                                          onTap: () =>
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(),
+                                                          child: Icon(Icons
+                                                              .arrow_back)),
                                                     ),
                                                     Spacer(),
-                                                    Text('Create Tutorial', style: caption.copyWith(fontSize: 12,color: Colors.black),),
+                                                    Text(
+                                                      'Create Tutorial',
+                                                      style: caption.copyWith(
+                                                          fontSize: 12,
+                                                          color: Colors.black),
+                                                    ),
                                                     Spacer()
                                                   ],
                                                 ),
-                                                SizedBox(height: 24,),
+                                                SizedBox(
+                                                  height: 24,
+                                                ),
                                                 Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     Column(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
                                                       children: [
                                                         CustomText(
-                                                            text: 'Choose Course', weight: FontWeight.w400,size: 16, color: HexColor('0F193B')),
-                                                        SizedBox(height: 16,),
+                                                            text:
+                                                                'Choose Course',
+                                                            weight:
+                                                                FontWeight.w400,
+                                                            size: 16,
+                                                            color: HexColor(
+                                                                '0F193B')),
+                                                        SizedBox(
+                                                          height: 16,
+                                                        ),
                                                         Container(
                                                           height: 60,
-                                                          width: double.infinity,
+                                                          width:
+                                                              double.infinity,
                                                           decoration: BoxDecoration(
-                                                              color: HexColor('F0F0F0'),
-                                                              borderRadius: BorderRadius.circular(12)),
+                                                              color: HexColor(
+                                                                  'F0F0F0'),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          12)),
                                                           child: DropdownButton(
                                                             isExpanded: true,
                                                             hint: Text(
                                                               "Choose Course",
                                                               style: TextStyle(
                                                                   fontSize: 14,
-                                                                  color: Colors.black,
-                                                                  fontWeight: FontWeight.w500),
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500),
                                                             ),
                                                             value: courseCode,
-                                                            items: courseList.map((String value) {
+                                                            items: courseList
+                                                                .map((String
+                                                                    value) {
                                                               return DropdownMenuItem(
                                                                 value: value,
                                                                 child: Text(
                                                                   value,
                                                                   style: TextStyle(
-                                                                      fontSize: 14,
-                                                                      color: primaryTextColor,
-                                                                      fontWeight: FontWeight.w500),
+                                                                      fontSize:
+                                                                          14,
+                                                                      color:
+                                                                          primaryTextColor,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500),
                                                                 ),
                                                               );
                                                             }).toList(),
                                                             onChanged: (value) {
                                                               setState(() {
-                                                                courseCode = value;
+                                                                courseCode =
+                                                                    value;
                                                               });
                                                             },
                                                           ),
                                                         ),
                                                       ],
                                                     ),
-                                                    SizedBox(height: 24,),
+                                                    SizedBox(
+                                                      height: 24,
+                                                    ),
                                                     Column(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
                                                       children: [
                                                         CustomText(
-                                                            text: 'Choose Date & Time', size: 16, weight: FontWeight.w400,color: HexColor('0F193B')),
-                                                        SizedBox(height: 16,),
+                                                            text:
+                                                                'Choose Date & Time',
+                                                            size: 16,
+                                                            weight:
+                                                                FontWeight.w400,
+                                                            color: HexColor(
+                                                                '0F193B')),
+                                                        SizedBox(
+                                                          height: 16,
+                                                        ),
                                                         GestureDetector(
-                                                          onTap:() {
+                                                          onTap: () {
                                                             DatePicker.showDateTimePicker(
                                                                 context,
-                                                                showTitleActions: true,
-                                                                onChanged: (date) {
-                                                                }, onConfirm: (date) {
+                                                                showTitleActions:
+                                                                    true,
+                                                                onChanged:
+                                                                    (date) {},
+                                                                onConfirm:
+                                                                    (date) {
                                                               setState(() {
-                                                                datTime = date.toString();
+                                                                datTime = date
+                                                                    .toString();
                                                               });
-                                                              print('confirm $date');
-                                                            }, currentTime: DateTime.now());
+                                                              print(
+                                                                  'confirm $date');
+                                                            },
+                                                                currentTime:
+                                                                    DateTime
+                                                                        .now());
                                                           },
                                                           child: Container(
                                                             height: 68,
-                                                            width: double.infinity,
-                                                            padding: const EdgeInsets.only(left: 16,top: 20,bottom: 20),
-                                                            color: HexColor('FAFAFA'),
+                                                            width:
+                                                                double.infinity,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .only(
+                                                                    left: 16,
+                                                                    top: 20,
+                                                                    bottom: 20),
+                                                            color: HexColor(
+                                                                'FAFAFA'),
                                                             child: Text(
-                                                                '${datTime == '' ? 'Saturday' : datTime}'
-                                                            ),
+                                                                '${datTime == '' ? 'Saturday' : datTime}'),
                                                           ),
                                                         )
                                                       ],
                                                     ),
-                                                    SizedBox(height: 24,),
+                                                    SizedBox(
+                                                      height: 24,
+                                                    ),
                                                     Column(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
                                                       children: [
                                                         CustomText(
-                                                            text: 'Enter Location', size: 16, weight: FontWeight.w400,color: HexColor('0F193B')),
-                                                        SizedBox(height: 16,),
+                                                            text:
+                                                                'Enter Location',
+                                                            size: 16,
+                                                            weight:
+                                                                FontWeight.w400,
+                                                            color: HexColor(
+                                                                '0F193B')),
+                                                        SizedBox(
+                                                          height: 16,
+                                                        ),
                                                         _buildFields(
                                                             labelText: "",
                                                             onChanged: (value) {
                                                               setState(() {
-                                                                location = value;
+                                                                location =
+                                                                    value;
                                                               });
                                                             }),
                                                       ],
                                                     ),
                                                   ],
                                                 ),
-                                                SizedBox(height: 44,),
+                                                SizedBox(
+                                                  height: 44,
+                                                ),
                                                 GestureDetector(
-                                                    onTap: () async{
+                                                    onTap: () async {
                                                       validation();
                                                     },
-                                                    child: button(text:'Create Tutorial')
-                                                ),
+                                                    child: button(
+                                                        text:
+                                                            'Create Tutorial')),
                                               ],
                                             ),
-                                          )
-                                      ),
+                                          )),
                                     );
-                                  })
-                              )
-                          ),
-                        ),
-                        body: Container(
-                          child: ListView.builder(
-                            itemCount: study.tutorialModelList.length,
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            itemBuilder: (context,index){
-                              return tutorialCard(
-                                courseCode: study.tutorialModel.courseCode,
-                                location: study.tutorialModel.location,
-                                date:study.tutorialModel.when,);
-                            },
-                          ),
-                        ),
+                                  }))),
+                    ),
+                    body: Container(
+                      child: ListView.builder(
+                        itemCount: study.tutorialModelList.length,
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return tutorialCard(
+                            courseCode: study.tutorialModel.courseCode,
+                            location: study.tutorialModel.location,
+                            date: study.tutorialModel.when,
+                          );
+                        },
                       ),
-                      Scaffold(
-                        backgroundColor: backgroundColor,
-                        floatingActionButton: FloatingActionButton(
-                            backgroundColor: buttonColor,
-                            child: Icon(Icons.add),
-                            elevation: 2.0,
-                            onPressed:  () => showCupertinoModalBottomSheet(
-                                context: context,
-                                builder: (context) => StatefulBuilder(builder: (BuildContext context,
-                                    StateSetter myState ) {
-                                  //studyState = setState;
-                                  return Material(
-                                    child: Container(
-                                        height: MediaQuery.of(context).size.height * 0.8,
-                                        color: Colors.white,
-                                        child : Padding(
-                                          padding: const EdgeInsets.all(24.0),
-                                          child: ListView(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Align(
-                                                    alignment: Alignment.topLeft,
-                                                    child: GestureDetector(
-                                                        onTap: () => Navigator.of(context).pop(),
-                                                        child: Icon(Icons.arrow_back)
+                    ),
+                  ),
+                  Scaffold(
+                      backgroundColor: backgroundColor,
+                      floatingActionButton: FloatingActionButton(
+                          backgroundColor: buttonColor,
+                          child: Icon(Icons.add),
+                          elevation: 2.0,
+                          onPressed: () => showCupertinoModalBottomSheet(
+                              context: context,
+                              builder: (context) => StatefulBuilder(builder:
+                                      (BuildContext context,
+                                          StateSetter myState) {
+                                    //studyState = setState;
+                                    return Material(
+                                      child: Container(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.8,
+                                          color: Colors.white,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(24.0),
+                                            child: ListView(
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Align(
+                                                      alignment:
+                                                          Alignment.topLeft,
+                                                      child: GestureDetector(
+                                                          onTap: () =>
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(),
+                                                          child: Icon(Icons
+                                                              .arrow_back)),
                                                     ),
-                                                  ),
-                                                  Spacer(),
-                                                  Text('Create Study Group', style: caption.copyWith(fontSize: 12,color: Colors.black),),
-                                                  Spacer()
-                                                ],
-                                              ),
-                                              SizedBox(height: 24,),
-                                              Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Column(
-                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      CustomText(
-                                                          text: 'Choose Course', weight: FontWeight.w400,size: 16, color: HexColor('0F193B')),
-                                                      SizedBox(height: 16,),
-                                                      Container(
-                                                        height: 60,
-                                                        width: double.infinity,
-                                                        decoration: BoxDecoration(
-                                                            color: HexColor('F0F0F0'),
-                                                            borderRadius: BorderRadius.circular(12)),
-                                                        child: DropdownButton(
-                                                          isExpanded: true,
-                                                          hint: Text(
-                                                            "Choose Course",
-                                                            style: TextStyle(
-                                                                fontSize: 14,
-                                                                color: Colors.black,
-                                                                fontWeight: FontWeight.w500),
+                                                    Spacer(),
+                                                    Text(
+                                                      'Create Study Group',
+                                                      style: caption.copyWith(
+                                                          fontSize: 12,
+                                                          color: Colors.black),
+                                                    ),
+                                                    Spacer()
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 24,
+                                                ),
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        CustomText(
+                                                            text:
+                                                                'Choose Course',
+                                                            weight:
+                                                                FontWeight.w400,
+                                                            size: 16,
+                                                            color: HexColor(
+                                                                '0F193B')),
+                                                        SizedBox(
+                                                          height: 16,
+                                                        ),
+                                                        Container(
+                                                          height: 60,
+                                                          width:
+                                                              double.infinity,
+                                                          decoration: BoxDecoration(
+                                                              color: HexColor(
+                                                                  'F0F0F0'),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          12)),
+                                                          child: DropdownButton(
+                                                            isExpanded: true,
+                                                            hint: Text(
+                                                              "Choose Course",
+                                                              style: TextStyle(
+                                                                  fontSize: 14,
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500),
+                                                            ),
+                                                            value: courseCode,
+                                                            items: courseList
+                                                                .map((String
+                                                                    value) {
+                                                              return DropdownMenuItem(
+                                                                value: value,
+                                                                child: Text(
+                                                                  value,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          14,
+                                                                      color:
+                                                                          primaryTextColor,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500),
+                                                                ),
+                                                              );
+                                                            }).toList(),
+                                                            onChanged: (value) {
+                                                              setState(() {
+                                                                courseCode =
+                                                                    value;
+                                                              });
+                                                            },
                                                           ),
-                                                          value: courseCode,
-                                                          items: courseList.map((String value) {
-                                                            return DropdownMenuItem(
-                                                              value: value,
-                                                              child: Text(
-                                                                value,
-                                                                style: TextStyle(
-                                                                    fontSize: 14,
-                                                                    color: primaryTextColor,
-                                                                    fontWeight: FontWeight.w500),
-                                                              ),
-                                                            );
-                                                          }).toList(),
-                                                          onChanged: (value) {
-                                                            setState(() {
-                                                              courseCode = value;
-                                                            });
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(
+                                                      height: 24,
+                                                    ),
+                                                    Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        CustomText(
+                                                            text:
+                                                                'Choose Date & Time',
+                                                            size: 16,
+                                                            weight:
+                                                                FontWeight.w400,
+                                                            color: HexColor(
+                                                                '0F193B')),
+                                                        SizedBox(
+                                                          height: 16,
+                                                        ),
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            DatePicker.showDateTimePicker(
+                                                                context,
+                                                                showTitleActions:
+                                                                    true,
+                                                                onChanged:
+                                                                    (date) {},
+                                                                onConfirm:
+                                                                    (date) {
+                                                              setState(() {
+                                                                datTime = date
+                                                                    .toString();
+                                                              });
+                                                              print(
+                                                                  'confirm $date');
+                                                            },
+                                                                currentTime:
+                                                                    DateTime
+                                                                        .now());
                                                           },
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 24,),
-                                                  Column(
-                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      CustomText(
-                                                          text: 'Choose Date & Time', size: 16, weight: FontWeight.w400,color: HexColor('0F193B')),
-                                                      SizedBox(height: 16,),
-                                                      GestureDetector(
-                                                        onTap:() {
-                                                          DatePicker.showDateTimePicker(
-                                                              context,
-                                                              showTitleActions: true,
-                                                              onChanged: (date) {
-                                                              }, onConfirm: (date) {
-                                                            setState(() {
-                                                              datTime = date.toString();
-                                                            });
-                                                            print('confirm $date');
-                                                          }, currentTime: DateTime.now());
-                                                        },
-                                                        child: Container(
-                                                          height: 68,
-                                                          width: double.infinity,
-                                                          padding: const EdgeInsets.only(left: 16,top: 20,bottom: 20),
-                                                          color: HexColor('FAFAFA'),
-                                                          child: Text(
-                                                              '${datTime == '' ? 'Saturday' : datTime}'
+                                                          child: Container(
+                                                            height: 68,
+                                                            width:
+                                                                double.infinity,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .only(
+                                                                    left: 16,
+                                                                    top: 20,
+                                                                    bottom: 20),
+                                                            color: HexColor(
+                                                                'FAFAFA'),
+                                                            child: Text(
+                                                                '${datTime == '' ? 'Saturday' : datTime}'),
                                                           ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    SizedBox(
+                                                      height: 24,
+                                                    ),
+                                                    Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        CustomText(
+                                                            text:
+                                                                'Enter Location',
+                                                            size: 16,
+                                                            weight:
+                                                                FontWeight.w400,
+                                                            color: HexColor(
+                                                                '0F193B')),
+                                                        SizedBox(
+                                                          height: 16,
                                                         ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 24,),
-                                                  Column(
-                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      CustomText(
-                                                          text: 'Enter Location', size: 16, weight: FontWeight.w400,color: HexColor('0F193B')),
-                                                      SizedBox(height: 16,),
-                                                      _buildFields(
-                                                          labelText: "",
-                                                          onChanged: (value) {
-                                                            setState(() {
-                                                              location = value;
-                                                            });
-                                                          }),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(height: 44,),
-                                              GestureDetector(
-                                                  onTap: () async{
-                                                    createStudyGroup();
-                                                  },
-                                                  child: button(text:'Create Study Group')
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                    ),
-                                  );
-                                })
-                            )
-                        ),
-                        body: Container(
-                          child: ListView.builder(
-                            itemCount: study.studyGroupModelList.length,
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            itemBuilder: (context,index){
-                              return studyCard(
+                                                        _buildFields(
+                                                            labelText: "",
+                                                            onChanged: (value) {
+                                                              setState(() {
+                                                                location =
+                                                                    value;
+                                                              });
+                                                            }),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 44,
+                                                ),
+                                                GestureDetector(
+                                                    onTap: () async {
+                                                      createStudyGroup();
+                                                    },
+                                                    child: button(
+                                                        text:
+                                                            'Create Study Group')),
+                                              ],
+                                            ),
+                                          )),
+                                    );
+                                  }))),
+                      body: Container(
+                        child: ListView.builder(
+                          itemCount: study.studyGroupModelList.length,
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                showCupertinoModalBottomSheet(
+                                    context: context,
+                                    builder:
+                                        (context) => StatefulBuilder(builder:
+                                                (BuildContext context,
+                                                    StateSetter myState) {
+                                              //studyState = setState;
+                                              return Material(
+                                                child: Container(
+                                                    height:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.8,
+                                                    color: Colors.white,
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              24.0),
+                                                      child: ListView(
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              Align(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .topLeft,
+                                                                child: GestureDetector(
+                                                                    onTap: () =>
+                                                                        Navigator.of(context)
+                                                                            .pop(),
+                                                                    child: Icon(
+                                                                        Icons
+                                                                            .arrow_back)),
+                                                              ),
+                                                              Spacer(),
+                                                              Text(
+                                                                'Study Group Details',
+                                                                style: caption.copyWith(
+                                                                    fontSize:
+                                                                        12,
+                                                                    color: Colors
+                                                                        .black),
+                                                              ),
+                                                              Spacer()
+                                                            ],
+                                                          ),
+                                                          SizedBox(
+                                                            height: 24,
+                                                          ),
+                                                          Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                                 
+                                                            children: [
+                                                              Column(
+                                                                children: [
+                                                                  Text('Study Group',style:headerText),
+                                                                   Row(
+                                                                children: [
+                                                                  Column(
+                                                                    children: [
+                                                                       Text('When',style: captionGrey,),
+                                                                       Text('${study.studyGroupModel.when}')
+                                                                    ]                                                          
+
+                                                                  )
+                                                                ],
+                                                              ),
+                                                                ],
+                                                              ),
+                                                             
+                                                              Column(
+                                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: [
+                                                                  Column(
+                                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                    children: [
+                                                                        Text('Course',style: captionGrey,),
+                                                                         Text('${study.studyGroupModel.courseCode}',style: TextStyle(fontSize: 18, color: HexColor('1c1c1c')))
+                                                                    ],
+                                                                  ),
+                                                                  Column(
+                                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                    children: [
+                                                                        Text('Location',style: captionGrey,),
+                                                                         Text('${study.studyGroupModel.location}', style: TextStyle(fontSize: 18, color: HexColor('1c1c1c')
+                                                                         )
+                                                                         )
+                                                                    ],
+                                                                  )
+                                                                ],
+                                                              )
+                                                            ],
+                                                          ),
+                                                          Spacer(),
+                                                          Align(
+                                                            alignment: Alignment.bottomCenter,
+                                                            child: GestureDetector(
+                                                                onTap: () async {
+                                                                  //createStudyGroup();
+                                                                },
+                                                                child: button(
+                                                                    text:
+                                                                        'Invite Friends')),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    )),
+                                              );
+                                            }));
+                              },
+                              child: studyCard(
                                 courseCode: study.studyGroupModel.courseCode,
                                 location: study.studyGroupModel.location,
-                                date:study.studyGroupModel.when,);
-                            },
-                          ),
-                        )
-                      )
-                    ]
-                ),
+                                date: study.studyGroupModel.when,
+                              ),
+                            );
+                          },
+                        ),
+                      ))
+                ]),
               ),
             ],
           ),
@@ -527,7 +820,7 @@ class tutorialCard extends StatelessWidget {
 
   const tutorialCard({
     Key key,
-   @required this.courseCode,
+    @required this.courseCode,
     @required this.location,
     @required this.date,
   }) : super(key: key);
@@ -536,26 +829,26 @@ class tutorialCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(16)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              courseCode,
-              style: headerFour,
-            ),
-            SizedBox(
-              height: 24,
-            ),
-            Text(location, style: captionGrey),
-            SizedBox(
-              height: 24,
-            ),
-            Text(date, style: captionGrey),
-          ],
-        ),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(16)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            courseCode,
+            style: headerFour,
+          ),
+          SizedBox(
+            height: 24,
+          ),
+          Text(location, style: captionGrey),
+          SizedBox(
+            height: 24,
+          ),
+          Text(date, style: captionGrey),
+        ],
+      ),
     );
   }
 }

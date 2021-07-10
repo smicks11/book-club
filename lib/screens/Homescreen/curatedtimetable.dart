@@ -114,10 +114,12 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                         child: CircleAvatar(
                                           backgroundColor: Colors.white,
                                           child: Text(
-                                            '${user.userModel.fullName.split("")[0][0]}${user.userModel.fullName.split("")[1][0]}',
+                                            '${user.userModel.fullName.split("")[0][0]}${user.userModel.fullName.split(" ")[1][0]}',
                                             style: TextStyle(
                                                 color: buttonColor,
-                                                fontSize: 14),
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500
+                                                ),
                                           ),
                                         ),
                                       )

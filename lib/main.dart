@@ -9,6 +9,7 @@ import 'package:book_club/screens/homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +20,10 @@ void main() async {
   await Firebase.initializeApp();
   //Dependency Injection just like how tou are using provider below
   Get.put(AppController());
+   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.white,
+    statusBarBrightness: Brightness.dark
+  ));
   runApp(MyApp());
 }
 
