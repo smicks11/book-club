@@ -4,7 +4,9 @@ import 'package:book_club/provider/StudyProvider.dart';
 import 'package:book_club/provider/Userprovider.dart';
 import 'package:book_club/provider/onBoarding.dart';
 import 'package:book_club/screens/Auth/SignIn_Page.dart';
+import 'package:book_club/screens/Homescreen/curatedtimetable.dart';
 import 'package:book_club/screens/homepage.dart';
+import 'package:book_club/screens/pageview.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -70,7 +72,7 @@ class MyApp extends StatelessWidget {
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (ctx, snapshot) {
               if (snapshot.hasData) {
-                return HomePage();
+                return PageViewScreen();
               } else {
                 return SignInPage();
               }

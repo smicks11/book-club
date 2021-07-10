@@ -1,5 +1,7 @@
 import 'package:book_club/provider/StudyProvider.dart';
 import 'package:book_club/provider/Userprovider.dart';
+import 'package:book_club/screens/Auth/SignIn_Page.dart';
+import 'package:book_club/screens/Study/studyDetail.dart';
 import 'package:book_club/shared/button.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
@@ -72,7 +74,8 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
         'courseCode': courseCode,
         'location': location,
         'when': datTime
-      }).then((value) => print('Created Succesfully'));
+      }).then((value) => Provider.of<StudyProvider>(context, listen: false)
+          .getStudyGroup(context));
       Navigator.of(context).pop();
       // myDialogBox();
     } on PlatformException catch (e) {
@@ -672,133 +675,36 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                                   }))),
                       body: Container(
                         child: ListView.builder(
-                          itemCount: study.studyGroupModelList.length,
+                          itemCount: 1,
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                showCupertinoModalBottomSheet(
-                                    context: context,
-                                    builder:
-                                        (context) => StatefulBuilder(builder:
-                                                (BuildContext context,
-                                                    StateSetter myState) {
-                                              //studyState = setState;
-                                              return Material(
-                                                child: Container(
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .height *
-                                                            0.8,
-                                                    color: Colors.white,
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              24.0),
-                                                      child: ListView(
-                                                        children: [
-                                                          Row(
-                                                            children: [
-                                                              Align(
-                                                                alignment:
-                                                                    Alignment
-                                                                        .topLeft,
-                                                                child: GestureDetector(
-                                                                    onTap: () =>
-                                                                        Navigator.of(context)
-                                                                            .pop(),
-                                                                    child: Icon(
-                                                                        Icons
-                                                                            .arrow_back)),
-                                                              ),
-                                                              Spacer(),
-                                                              Text(
-                                                                'Study Group Details',
-                                                                style: caption.copyWith(
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                        .black),
-                                                              ),
-                                                              Spacer()
-                                                            ],
-                                                          ),
-                                                          SizedBox(
-                                                            height: 24,
-                                                          ),
-                                                          Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                                 
-                                                            children: [
-                                                              Column(
-                                                                children: [
-                                                                  Text('Study Group',style:headerText),
-                                                                   Row(
-                                                                children: [
-                                                                  Column(
-                                                                    children: [
-                                                                       Text('When',style: captionGrey,),
-                                                                       Text('${study.studyGroupModel.when}')
-                                                                    ]                                                          
-
-                                                                  )
-                                                                ],
-                                                              ),
-                                                                ],
-                                                              ),
-                                                             
-                                                              Column(
-                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Column(
-                                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                    children: [
-                                                                        Text('Course',style: captionGrey,),
-                                                                         Text('${study.studyGroupModel.courseCode}',style: TextStyle(fontSize: 18, color: HexColor('1c1c1c')))
-                                                                    ],
-                                                                  ),
-                                                                  Column(
-                                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                    children: [
-                                                                        Text('Location',style: captionGrey,),
-                                                                         Text('${study.studyGroupModel.location}', style: TextStyle(fontSize: 18, color: HexColor('1c1c1c')
-                                                                         )
-                                                                         )
-                                                                    ],
-                                                                  )
-                                                                ],
-                                                              )
-                                                            ],
-                                                          ),
-                                                          Spacer(),
-                                                          Align(
-                                                            alignment: Alignment.bottomCenter,
-                                                            child: GestureDetector(
-                                                                onTap: () async {
-                                                                  //createStudyGroup();
-                                                                },
-                                                                child: button(
-                                                                    text:
-                                                                        'Invite Friends')),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )),
-                                              );
-                                            }));
-                              },
-                              child: studyCard(
-                                courseCode: study.studyGroupModel.courseCode,
-                                location: study.studyGroupModel.location,
-                                date: study.studyGroupModel.when,
-                              ),
+                            return Column(
+                              children:  study.studyGroupModelList.map((e) => 
+                                   GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (ctx) => 
+                                              StudyDetail(
+                                                  courseCode: e.courseCode,
+                                                  when: e.when,
+                                                  location: e.location
+                                                      )
+                                                      ));
+                                    },
+                                    child: Column(
+                                        children:[
+                                          studyCard(
+                                                courseCode: e.courseCode,
+                                                location: e.location,
+                                                date: e.when,
+                                              ),
+                                        ]
+                                        ))
+                              ).toList()
+                              ,
                             );
                           },
                         ),
@@ -869,6 +775,7 @@ class studyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
+      width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(16)),

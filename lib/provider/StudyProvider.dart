@@ -64,7 +64,7 @@ class StudyProvider with ChangeNotifier {
       newStudyGroupList.add(studyGroupModel);
 
       studyGroupModelList = newStudyGroupList;
-      // print(userModelList);
+      print(studyGroupModel);
     });
 
     notifyListeners();

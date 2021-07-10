@@ -54,6 +54,7 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context, listen: true);
+    user.getUserData(context);
     final study = Provider.of<TimeTableProvider>(context, listen: true);
     return Scaffold(
       backgroundColor: buttonColor,
@@ -106,10 +107,12 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                         width: 10.0,
                                       ),
                                       GestureDetector(
-                                        onTap: () async{
+                                        onTap: () async {
                                           await FirebaseAuth.instance.signOut();
-                                          Navigator.of(context).pushReplacement(MaterialPageRoute(
-                                              builder: (ctx) => SignInPage()));
+                                          Navigator.of(context).pushReplacement(
+                                              MaterialPageRoute(
+                                                  builder: (ctx) =>
+                                                      SignInPage()));
                                         },
                                         child: CircleAvatar(
                                           backgroundColor: Colors.white,
@@ -118,8 +121,7 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                             style: TextStyle(
                                                 color: buttonColor,
                                                 fontSize: 14,
-                                                fontWeight: FontWeight.w500
-                                                ),
+                                                fontWeight: FontWeight.w500),
                                           ),
                                         ),
                                       )
@@ -141,7 +143,8 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
-                                  children: (user.userModel.readingDays.contains('weekend'))
+                                  children: (user.userModel.readingDays
+                                          .contains('weekend'))
                                       ? weekends
                                           .map((e) => GestureDetector(
                                                 onTap: () {
@@ -203,37 +206,35 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                         left: 20,
                         bottom: 0,
                         child: Container(
-                            height: 120,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12)),
-
-                            child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Timetable(
-                                    course: 'CSC 203',
-                                    time: '05 AM - 07 PM',
-                                  ),
-                                  Container(
-                                    height: 60,
-                                    width: 0.6,
-                                    color: HexColor('E4E7F1'),
-                                  ),
-                                  Timetable(
-                                    course: 'CSC 203',
-                                    time: '05 AM - 07 PM',
-                                  )
-                                ]
-
-
-                                //
-
-                                //
-
+                          height: 120,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12)),
+                          child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Timetable(
+                                  course: 'CSC 203',
+                                  time: '05 AM - 07 PM',
                                 ),
-                            ),
+                                Container(
+                                  height: 60,
+                                  width: 0.6,
+                                  color: HexColor('E4E7F1'),
+                                ),
+                                Timetable(
+                                  course: 'CSC 203',
+                                  time: '05 AM - 07 PM',
+                                )
+                              ]
+
+                              //
+
+                              //
+
+                              ),
+                        ),
                       )
                     ],
                   )),
