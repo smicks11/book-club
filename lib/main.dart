@@ -5,6 +5,7 @@ import 'package:book_club/provider/Userprovider.dart';
 import 'package:book_club/provider/onBoarding.dart';
 import 'package:book_club/screens/Auth/SignIn_Page.dart';
 import 'package:book_club/screens/Homescreen/curatedtimetable.dart';
+import 'package:book_club/screens/Study/studyGroupInvite.dart';
 import 'package:book_club/screens/homepage.dart';
 import 'package:book_club/screens/pageview.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,24 +17,54 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:statusbarz/statusbarz.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+
   //Dependency Injection just like how tou are using provider below
   Get.put(AppController());
    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     systemNavigationBarColor: Colors.white,
     statusBarBrightness: Brightness.dark
   ));
+
+
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
+
   @override
   Widget build(BuildContext context) {
     UserProvider userProvider;
+
+    void initDynamicLinks() async {
+      FirebaseDynamicLinks.instance.onLink(
+          onSuccess: (PendingDynamicLinkData dynamicLink) async {
+            final Uri deepLink = dynamicLink?.link;
+
+            if (deepLink != null) {
+              Navigator.pushNamed(context, deepLink.path);
+            }
+          },
+          onError: (OnLinkErrorException e) async {
+            print('onLinkError');
+            print(e.message);
+          }
+      );
+
+      final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+      final Uri deepLink = data?.link;
+
+      if (deepLink != null) {
+        Navigator.pushNamed(context, deepLink.path);
+      }
+    }
 
     return MultiProvider(
       providers: [
@@ -59,6 +90,10 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'funet',
           debugShowCheckedModeBanner: false,
+          initialRoute: '/',
+          routes: <String, WidgetBuilder>{
+            '/study': (BuildContext context) => StudyInvite(),
+          },
           navigatorObservers: [Statusbarz.instance.observer],
           theme: ThemeData(
             primarySwatch: Colors.blue,
@@ -84,14 +119,3 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// class AuthenticationWrapper extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     final firebaseUser = context.watch<User>();
-
-//     if (firebaseUser != null) {
-//       return HomePage();
-//     }
-//     return SignInPage();
-//   }
-// }

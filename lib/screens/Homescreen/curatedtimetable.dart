@@ -33,12 +33,12 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
 
   @override
   void initState() {
+    super.initState();
     getTimetable();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserProvider>(context, listen: false).getUserData(context);
       //Provider.of<TimeTableProvider>(context, listen: false).getStudyTimeTable(context);
     });
-    super.initState();
   }
 
   Future<List> getTimetable() async {

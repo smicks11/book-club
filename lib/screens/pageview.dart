@@ -1,6 +1,7 @@
 
 import 'package:book_club/screens/library.dart';
 import 'package:book_club/screens/Study/study.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 // import 'package:book_club/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hex_color/flutter_hex_color.dart';
@@ -21,6 +22,7 @@ class _PageViewScreenState extends State<PageViewScreen> {
   @override
   void initState() {
     super.initState();
+    this.initDynamicLinks();
     _selectedPageIndex = 0;
     _pages = [CuratedTimeTable(), Study(), Library()];
     _pageController = PageController(initialPage: _selectedPageIndex);
@@ -30,6 +32,29 @@ class _PageViewScreenState extends State<PageViewScreen> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  void initDynamicLinks() async {
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+          final Uri deepLink = dynamicLink?.link;
+
+          if (deepLink != null) {
+            Navigator.pushNamed(context, deepLink.path);
+          }
+        },
+        onError: (OnLinkErrorException e) async {
+          print('onLinkError');
+          print(e.message);
+        }
+    );
+
+    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    final Uri deepLink = data?.link;
+
+    if (deepLink != null) {
+      Navigator.pushNamed(context, deepLink.path);
+    }
   }
 
   @override

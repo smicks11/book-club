@@ -2,12 +2,14 @@ import 'package:book_club/provider/StudyProvider.dart';
 import 'package:book_club/provider/Userprovider.dart';
 import 'package:book_club/screens/Auth/SignIn_Page.dart';
 import 'package:book_club/screens/Study/studyDetail.dart';
+import 'package:book_club/screens/Study/studyGroupInvite.dart';
 import 'package:book_club/shared/button.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
 import 'package:book_club/shared/tab.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hex_color/flutter_hex_color.dart';
@@ -48,6 +50,27 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
   String location;
   var datTime = 'Saturday';
 
+ Future<Uri> createDynamicLink(String id) async {
+
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
+      uriPrefix: 'https://funet.page.link',
+      link: Uri.parse('https://funet.page.link/?id=$id'),
+      androidParameters: AndroidParameters(
+        packageName: 'com.example.book_club',
+        minimumVersion: 1,
+      ),
+      iosParameters: IosParameters(
+        bundleId: 'com.example.book_club',
+        minimumVersion: '1.0.1',
+      ),
+    );
+
+    final ShortDynamicLink shortDynamicLink = await parameters.buildShortLink();
+    final Uri shortUrl = shortDynamicLink.shortUrl;
+    return shortUrl;
+  }
+
+
   void validation() async {
     final FormState _form = _form1Key.currentState;
     await Firebase.initializeApp();
@@ -73,10 +96,14 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
         'userID': userData.userModel.userID,
         'courseCode': courseCode,
         'location': location,
-        'when': datTime
+        'when': datTime,
+
       }).then((value) => Provider.of<StudyProvider>(context, listen: false)
           .getStudyGroup(context));
       Navigator.of(context).pop();
+      var docID = FirebaseFirestore.instance.collection('studyGroup');
+      var documentId = docID.id;
+      createDynamicLink(documentId);
       // myDialogBox();
     } on PlatformException catch (e) {
       print(e.message.toString());
@@ -664,6 +691,7 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                                                 GestureDetector(
                                                     onTap: () async {
                                                       createStudyGroup();
+                                                      //createDynamicLink();
                                                     },
                                                     child: button(
                                                         text:
