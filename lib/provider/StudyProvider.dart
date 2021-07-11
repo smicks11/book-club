@@ -59,7 +59,9 @@ class StudyProvider with ChangeNotifier {
         courseCode: element.get("courseCode"),
         location: element.get("location"),
         when: element.get("when"),
-        userID: element.get('userID')
+        forum: element.get({"comment": "comment", "userID": "userID"}),
+        userID: element.get('userID'),
+        
       );
       newStudyGroupList.add(studyGroupModel);
 

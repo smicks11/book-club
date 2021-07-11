@@ -1,3 +1,4 @@
+import 'package:book_club/models/studyGroup.dart';
 import 'package:book_club/provider/StudyProvider.dart';
 import 'package:book_club/provider/Userprovider.dart';
 import 'package:book_club/screens/Auth/SignIn_Page.dart';
@@ -5,13 +6,13 @@ import 'package:book_club/screens/Study/studyDetail.dart';
 import 'package:book_club/shared/button.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
-import 'package:book_club/shared/tab.dart';
+// import 'package:book_club/shared/tab.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hex_color/flutter_hex_color.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,7 @@ class Study extends StatefulWidget {
 }
 
 class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
+  final List<StudyGroupModel> forum = [];
   @override
   TabController _tabController;
   void initState() {
@@ -73,7 +75,9 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
         'userID': userData.userModel.userID,
         'courseCode': courseCode,
         'location': location,
-        'when': datTime
+        'when': datTime,
+        'forum': "kjbkjhj"
+        // 'Forum' : forum
       }).then((value) => Provider.of<StudyProvider>(context, listen: false)
           .getStudyGroup(context));
       Navigator.of(context).pop();
@@ -680,31 +684,25 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
                             return Column(
-                              children:  study.studyGroupModelList.map((e) => 
-                                   GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (ctx) => 
-                                              StudyDetail(
-                                                  courseCode: e.courseCode,
-                                                  when: e.when,
-                                                  location: e.location
-                                                      )
-                                                      ));
-                                    },
-                                    child: Column(
-                                        children:[
-                                          studyCard(
-                                                courseCode: e.courseCode,
-                                                location: e.location,
-                                                date: e.when,
-                                              ),
-                                        ]
-                                        ))
-                              ).toList()
-                              ,
+                              children: study.studyGroupModelList
+                                  .map((e) => GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (ctx) => StudyDetail(
+                                                    courseCode: e.courseCode,
+                                                    when: e.when,
+                                                    location: e.location)));
+                                      },
+                                      child: Column(children: [
+                                        studyCard(
+                                          courseCode: e.courseCode,
+                                          location: e.location,
+                                          date: e.when,
+                                        ),
+                                      ])))
+                                  .toList(),
                             );
                           },
                         ),
