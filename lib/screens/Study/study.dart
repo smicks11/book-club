@@ -92,19 +92,23 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
     await Firebase.initializeApp();
     final userData = Provider.of<UserProvider>(context, listen: false);
     try {
-      FirebaseFirestore.instance.collection("studyGroup").add({
+      final docRef =  FirebaseFirestore.instance.collection("studyGroup").add({
         'userID': userData.userModel.userID,
         'courseCode': courseCode,
         'location': location,
         'when': datTime,
+      }).then((value){
+    Provider.of<StudyProvider>(context, listen: false)
+        .getStudyGroup(context);
+    var documentId = value.id;
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (ctx) =>
+                StudyDetail(courseCode: courseCode, when: datTime, location: location, id:documentId.toString())));
+    });
 
-      }).then((value) => Provider.of<StudyProvider>(context, listen: false)
-          .getStudyGroup(context));
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (ctx) =>
-                  StudyDetail(courseCode: courseCode, when: datTime, location: location, )));
+
       // myDialogBox();
     } on PlatformException catch (e) {
       print(e.message.toString());
@@ -719,7 +723,8 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                                               StudyDetail(
                                                   courseCode: e.courseCode,
                                                   when: e.when,
-                                                  location: e.location
+                                                  location: e.location,
+                                                id: e.id,
                                                       )
                                                       ));
                                     },

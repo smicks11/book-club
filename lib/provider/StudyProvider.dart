@@ -37,6 +37,7 @@ class StudyProvider with ChangeNotifier {
 
   Future<void> getStudyGroup (BuildContext context) async {
     List<StudyGroupModel> newStudyGroupList = [];
+    String docID = '';
     User currentUser = FirebaseAuth.instance.currentUser;
     FirebaseAuth.instance
         .authStateChanges()
@@ -53,27 +54,19 @@ class StudyProvider with ChangeNotifier {
       .where('userID', isEqualTo: currentUser.uid)
         .get();
 
-    var collection = FirebaseFirestore.instance.collection('studyGroup');
-    var querySnapshots = await collection.get();
-    for (var snapshot in querySnapshots.docs) {
-      var documentID = snapshot.id;
-      print('this is the document id');
-      print(documentID);
-    }
-
     studyGroupSnapShots.docs.forEach((element) {
       studyGroupModel = StudyGroupModel(
+        id: element.id,
         courseCode: element.get("courseCode"),
         location: element.get("location"),
         when: element.get("when"),
-        forum: element.get({"comment": "comment", "userID": "userID"}),
+       // forum: element.get({"comment": "comment", "userID": "userID"}),
         userID: element.get('userID'),
       );
 
       newStudyGroupList.add(studyGroupModel);
-
-
       studyGroupModelList = newStudyGroupList;
+
     });
 
     notifyListeners();

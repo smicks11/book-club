@@ -5,6 +5,7 @@ import 'package:book_club/provider/Userprovider.dart';
 import 'package:book_club/provider/onBoarding.dart';
 import 'package:book_club/screens/Auth/SignIn_Page.dart';
 import 'package:book_club/screens/Homescreen/curatedtimetable.dart';
+import 'package:book_club/screens/Study/studyDetail.dart';
 import 'package:book_club/screens/Study/studyGroupInvite.dart';
 import 'package:book_club/screens/homepage.dart';
 import 'package:book_club/screens/pageview.dart';
@@ -26,6 +27,7 @@ void main() async {
 
   //Dependency Injection just like how tou are using provider below
   Get.put(AppController());
+
    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     systemNavigationBarColor: Colors.white,
     statusBarBrightness: Brightness.dark
@@ -37,7 +39,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
-
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +93,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           initialRoute: '/',
           routes: <String, WidgetBuilder>{
-            '/study': (BuildContext context) => StudyInvite(),
+            '/study': (BuildContext context) => StudyDetail(id: ,),
           },
           navigatorObservers: [Statusbarz.instance.observer],
           theme: ThemeData(

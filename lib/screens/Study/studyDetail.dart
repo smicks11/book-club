@@ -2,6 +2,7 @@ import 'package:book_club/provider/StudyProvider.dart';
 import 'package:book_club/shared/button.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hex_color/flutter_hex_color.dart';
@@ -11,11 +12,13 @@ class StudyDetail extends StatefulWidget {
   final String courseCode;
   final String when;
   final String location;
+  final String id;
   const StudyDetail(
       {Key key,
-      @required this.courseCode,
-      @required this.when,
-      @required this.location,})
+        this.id,
+      this.courseCode,
+      this.when,
+      this.location,})
       : super(key: key);
 
   @override
@@ -23,6 +26,8 @@ class StudyDetail extends StatefulWidget {
 }
 
 class _StudyDetailState extends State<StudyDetail> {
+
+  String url = '';
 
   Future<Uri> createDynamicLink(String id) async {
 
@@ -41,12 +46,43 @@ class _StudyDetailState extends State<StudyDetail> {
 
     final ShortDynamicLink shortDynamicLink = await parameters.buildShortLink();
     final Uri shortUrl = shortDynamicLink.shortUrl;
-    return shortUrl;
+
+    setState(() {
+      url = shortUrl.toString();
+    });
+
+    print(url);
+    //return shortUrl;
+  }
+
+  Future<void> initDynamicLinks() async {
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+          final Uri deepLink = dynamicLink?.link;
+
+          if (deepLink != null) {
+            // ignore: unawaited_futures
+            Navigator.pushNamed(context, deepLink.path);
+          }
+        }, onError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
+    });
+
+    final PendingDynamicLinkData data =
+    await FirebaseDynamicLinks.instance.getInitialLink();
+    final Uri deepLink = data?.link;
+
+    if (deepLink != null) {
+      // ignore: unawaited_futures
+      Navigator.pushNamed(context, deepLink.path);
+    }
   }
 
 
 
   void initState() {
+    initDynamicLinks();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<StudyProvider>(context, listen: false).getStudyGroup(context);
     });
@@ -84,7 +120,7 @@ class _StudyDetailState extends State<StudyDetail> {
                           Spacer(),
                           GestureDetector(
                               onTap: () {
-                                //createDynamicLink(id);
+                                createDynamicLink(widget.id);
                               },
                               child: Icon(
                                 Icons.share,
@@ -106,7 +142,7 @@ class _StudyDetailState extends State<StudyDetail> {
                   color: Colors.white,
                   width: double.infinity,
                   child: Column(children: [
-                    Text('adkljf')
+                    Text('${url}')
                   ],),
                 )
               ]),
