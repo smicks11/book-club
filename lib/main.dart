@@ -93,7 +93,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           initialRoute: '/',
           routes: <String, WidgetBuilder>{
-            '/study': (BuildContext context) => StudyDetail(id: ,),
+            '/id': (BuildContext context) => StudyDetail(),
           },
           navigatorObservers: [Statusbarz.instance.observer],
           theme: ThemeData(
