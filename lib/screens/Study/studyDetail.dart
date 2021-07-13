@@ -1,4 +1,5 @@
-import 'package:book_club/models/studyGroup.dart';
+import 'package:book_club/models/commentmodel.dart';
+import 'package:book_club/provider/StudyProvider.dart';
 import 'package:book_club/provider/Userprovider.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'package:flutter_hex_color/flutter_hex_color.dart';
+import 'package:provider/provider.dart';
 
 class StudyDetail extends StatefulWidget {
   final String courseCode;
@@ -26,24 +28,65 @@ class StudyDetail extends StatefulWidget {
 
 String comment;
 
-void createForumComments() async {
-  final userID = FirebaseAuth.instance.currentUser;
-  // StudyGroupModel forum;
+class _StudyDetailState extends State<StudyDetail> {
+  List<CommentModel> finalComment = List<CommentModel>.empty(growable: true);
+  TextEditingController textController = TextEditingController();
+  List comments = [];
+  StateSetter forumState;
+  StudyProvider studyProvider;
 
-  try {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getComments();
+    });
+  }
+
+  void createForumComments() async {
+    final userID = FirebaseAuth.instance.currentUser;
+
+    try {
+//var encodedObject = json.encode(yourObject);
+
+      FirebaseFirestore.instance
+          .collection("studyGroup")
+          .doc("5YE8sWQXE26ITn5e3tQl")
+          .set({
+        'forum': FieldValue.arrayUnion([
+          {"comment": comment, "userId": userID.uid},
+        ])
+      }, SetOptions(merge: true));
+      getComments();
+    } on PlatformException catch (e) {
+      print(e.message.toString());
+    }
+  }
+
+  Future<void> getComments() async {
+    List<CommentModel> mainComment = [];
     FirebaseFirestore.instance
         .collection("studyGroup")
-        .doc("D5bxUycjtdZlQioFZ7Wp")
-        .update({
-      'Forum': {"comment": comment, "userID": userID}
+        .doc("5YE8sWQXE26ITn5e3tQl")
+        .get()
+        .then((docSnapshot) {
+      setState(() {
+        comments = docSnapshot.data()['forum'];
+      });
+      comments.forEach((element) {
+        CommentModel commentModel = CommentModel(
+          comment: element['comment'],
+          uid: element['uid'],
+        );
+        mainComment.add(commentModel);
+      });
+      print(comments);
     });
-  } on PlatformException catch (e) {
-    print(e.message.toString());
-  }
-}
 
-class _StudyDetailState extends State<StudyDetail> {
-  TextEditingController textController = TextEditingController();
+    finalComment = mainComment;
+
+    // notifyListeners();
+  }
 
   SliverPersistentHeader makeHeader(String headerText) {
     return SliverPersistentHeader(
@@ -81,6 +124,12 @@ class _StudyDetailState extends State<StudyDetail> {
 
   @override
   Widget build(BuildContext context) {
+    UserProvider user;
+    studyProvider = Provider.of<StudyProvider>(context);
+
+    final displayName = Provider.of<UserProvider>(context, listen: true);
+    displayName.getUserData(context);
+    //studyProvider.getComments();
     return Scaffold(
       backgroundColor: buttonColor,
       body: CustomScrollView(
@@ -88,33 +137,61 @@ class _StudyDetailState extends State<StudyDetail> {
         slivers: <Widget>[
           makeHeader('Header Section 1'),
           SliverFillRemaining(
-            hasScrollBody: false,
-            fillOverscroll: false,
+            hasScrollBody: true,
+            fillOverscroll: true,
             child: Container(
               color: backgroundColor,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Container(
-                    child: TextFormField(
-                      controller: textController,
-                      onChanged: (value) {
-                        setState(() {
-                          comment = value;
-                        });
+                    height: 400,
+                    child: ListView.builder(
+                      itemCount: finalComment.length,
+                      itemBuilder: (_, index) {
+                        return Container(
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: buttonColor,
+                                child: Text('${displayName.userModel.fullName.split("")[0][0]}${user.userModel.fullName.split(" ")[1][0]}')
+                              ),
+                              Text(finalComment[index].comment),
+                            ],
+                          ),
+                        );
                       },
-                      decoration: InputDecoration(
-                        labelText: "Write a comment",
-                        suffixIcon: GestureDetector(
-                            onTap: () async{
-                              createForumComments();
-                              print(comment);
-                            },
-                            child: Icon(Icons.send)),
-                      ),
                     ),
-                  )
-                  // Text('adkljf')
+                  ),
+                  // Container(
+                  //   child: Text(finalComment.toString()),
+                  // ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        child: TextFormField(
+                          controller: textController,
+                          onChanged: (value) {
+                            setState(() {
+                              comment = value;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            labelText: "Write a comment",
+                            suffixIcon: GestureDetector(
+                                onTap: () async {
+                                  createForumComments();
+
+                                  // print(comment);
+                                  //print(studyProvider.forumModelList.length);
+                                },
+                                child: Icon(Icons.send)),
+                          ),
+                        ),
+                      )
+                      // Text('adkljf')
+                    ],
+                  ),
                 ],
               ),
             ),

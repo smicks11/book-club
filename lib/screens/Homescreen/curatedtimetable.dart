@@ -56,6 +56,8 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
     final user = Provider.of<UserProvider>(context, listen: true);
     user.getUserData(context);
     final study = Provider.of<TimeTableProvider>(context, listen: true);
+
+    //List<UserModel> getName = Provider.of<UserProvider>(context);
     return Scaffold(
       backgroundColor: buttonColor,
       body: SafeArea(
