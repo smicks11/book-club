@@ -102,7 +102,6 @@ class _CuratedTimeTableState extends State<CuratedTimeTable>{
         mon = data['monday'];
         tue = data['tuesday'];
       });
-      print(mon[0]['courseCode']);
     });
   }
 
