@@ -104,16 +104,17 @@ class MyApp extends StatelessWidget {
             ),
           ),
 
-          home: StreamBuilder(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (ctx, snapshot) {
-              if (snapshot.hasData) {
-                return SignInPage();
-              } else {
-                return SignInPage();
-              }
-            },
-          ),
+          // home: StreamBuilder(
+          //   stream: FirebaseAuth.instance.authStateChanges(),
+          //   builder: (ctx, snapshot) {
+          //     if (snapshot.connectionState == ConnectionState.active) {
+          //       return HomePage();
+          //     } else {
+          //       return SignInPage();
+          //     }
+          //   },
+          // ),
+          home: SignInPage(),
         ),
       ),
     );

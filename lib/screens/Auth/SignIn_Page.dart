@@ -1,4 +1,6 @@
 import 'package:book_club/screens/Auth/SignUp_Page.dart';
+import 'package:book_club/screens/homepage.dart';
+import 'package:book_club/screens/pageview.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,7 +13,8 @@ class SignInPage extends StatefulWidget {
   _SignInPageState createState() => _SignInPageState();
 }
 
-String p = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+String p =
+    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
 String passwordL;
 String emailL;
 final GlobalKey<FormState> _signKey = GlobalKey<FormState>();
@@ -21,15 +24,21 @@ class _SignInPageState extends State<SignInPage> {
     final FormState _form = _signKey.currentState;
     if (!_form.validate()) {
       try {
-        UserCredential result = await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: emailL, password: passwordL);
+        // UserCredential result = await FirebaseAuth.instance
+        //     .signInWithEmailAndPassword(email: emailL, password: passwordL)
+        FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: emailL, password: passwordL)
+            .then((result) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => HomePage()));
+        });
         setState(() {
           loading = false;
           emailL = '';
           passwordL = '';
         });
-      
-        print(result.user);
+
+        // print(result.user);
       } on PlatformException catch (e) {
         print(e.message);
         // ignore: deprecated_member_use

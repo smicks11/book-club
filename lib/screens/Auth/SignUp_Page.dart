@@ -1,4 +1,6 @@
+import 'package:book_club/screens/Homescreen/curatedtimetable.dart';
 import 'package:book_club/screens/homepage.dart';
+import 'package:book_club/screens/pageview.dart';
 import 'package:book_club/shared/button.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
@@ -52,18 +54,39 @@ class _SignUpPageState extends State<SignUpPage> {
         FirebaseFirestore.instance.collection("User").doc(result.user.uid).set({
           "UserId": result.user.uid,
           "UserEmail": email,
-          "FullName": fullName,
+          "displayName": fullName,
           "Password": password,
           "Dept": dept,
           "Level": level,
           "readingDays" : "",
           "readingSession" : "",
           "admin" : admin
-        });
-        Navigator.pushAndRemoveUntil(context,
-            MaterialPageRoute(builder: (ctx) => HomePage(name:fullName)), (route) => false);
+        }).then((res) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      });
+        // Navigator.pushAndRemoveUntil(context,
+        //     MaterialPageRoute(builder: (ctx) => HomePage(name:fullName)), (route) => false);
         // myDialogBox();
       } on PlatformException catch (e) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Error"),
+              content: Text(e.message),
+              actions: [
+                TextButton(
+                  child: Text("Ok"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
         print(e.message.toString());
       }
     } else {}
