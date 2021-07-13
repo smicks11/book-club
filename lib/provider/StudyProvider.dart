@@ -53,7 +53,7 @@ class StudyProvider with ChangeNotifier {
     });
     QuerySnapshot studyGroupSnapShots = await FirebaseFirestore.instance
         .collection("studyGroup")
-        .where('userID', isEqualTo: currentUser.uid)
+        .where('members', isEqualTo: currentUser.uid)
         .get();
 
     studyGroupSnapShots.docs.forEach((element) {

@@ -30,19 +30,23 @@ class _StudyInviteState extends State<StudyInvite> {
     getStudyDetail(widget.id);
   }
 
+  String courseCode = '';
+
   Future<void> getStudyDetail(id) async{
     var courses = await FirebaseFirestore.instance.collection("studyGroup").doc(id)
         .get()
         .then((value) {
-          print(value.data());
+          setState(() {
+            courseCode = value.data()['courseCode'];
+          });
     });
   }
 
-  acceptInvite(id) async{
+  acceptInvite() async{
     User currentUser = FirebaseAuth.instance.currentUser;
     print('you suppose dey get this normal normal');
     print(widget.id);
-    var courses = await FirebaseFirestore.instance.collection("studyGroup").doc(id).set({
+    var courses = await FirebaseFirestore.instance.collection("studyGroup").doc(widget.id).set({
       'members' : FieldValue.arrayUnion([
         currentUser.uid,
       ])
@@ -53,36 +57,51 @@ class _StudyInviteState extends State<StudyInvite> {
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 20),
         child: Column(
           children: [
             Expanded(
-              flex: 1,
-                child: SvgPicture.asset('assets/svg/student.svg',height: 100,width: 100,)),
-            Column(
-              children: [
-                Text('Study Group Invite',style: headerFour.copyWith(color: Colors.black),),
-                SizedBox(height: 10,),
-                Text('Lets study together on this study group', style: caption.copyWith(color: Colors.black),)
-              ],
+              flex: 2,
+                child: SvgPicture.asset('assets/svg/student.svg',height: 200,width: 200,)),
+            Expanded(
+              flex: 2,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text('Study Group Invite',style: headerFour.copyWith(color: Colors.black),),
+                  SizedBox(height: 10,),
+                  Text('Join my ${courseCode} study group! Lets study together', style: caption.copyWith(color: Colors.black),)
+                ],
+              ),
             ),
-            GestureDetector(
-              onTap: (){
-                acceptInvite(widget.id);
-              },
-                child: button(text: 'Accept Invite')
-            ),
-            SizedBox(height: 20,),
-            GestureDetector(
-              onTap: (){
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => PageView(),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: (){
+                      acceptInvite();
+                    },
+                      child: button(text: 'Accept Invite')
                   ),
-                );
-              },
-                child: button(text: 'Decline Invite')
-            )
+                  SizedBox(height: 20,),
+                  GestureDetector(
+                      onTap: (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => Study(),
+                          ),
+                        );
+                      },
+                      child: button(text: 'Decline Invite')
+                  )
+                ],
+              ),
+            ),
+
           ],
         ),
       ),

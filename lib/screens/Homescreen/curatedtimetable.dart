@@ -27,7 +27,7 @@ class CuratedTimeTable extends StatefulWidget {
   _CuratedTimeTableState createState() => _CuratedTimeTableState();
 }
 
-class _CuratedTimeTableState extends State<CuratedTimeTable> with WidgetsBindingObserver{
+class _CuratedTimeTableState extends State<CuratedTimeTable>{
   TimeTableProvider timeTableProvider;
   List days = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'];
   List weekdays = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri'];
@@ -43,7 +43,7 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> with WidgetsBinding
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserProvider>(context, listen: false).getUserData(context);
       getstudyTimetable();
@@ -51,19 +51,22 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> with WidgetsBinding
     initDynamicLinks();
   }
 
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
 
   Future<void> initDynamicLinks() async {
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
           final Uri deepLink = dynamicLink.link;
           if (deepLink != null) {
+            print('this is the deeplink for null');
+            //print(deepLink.path);
             print(deepLink.queryParameters['id']);
-            Navigator.pushNamed(context, '/invite', arguments: deepLink.queryParameters['id']);
+            // Navigator.pushNamed(context, '/invite', arguments: deepLink.queryParameters['id']);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => StudyInvite(id:deepLink.path),
+              ),
+            );
           }
         }, onError: (OnLinkErrorException e) async {
       print('onLinkError');
@@ -71,16 +74,18 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> with WidgetsBinding
     });
 
     final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
-    final Uri deepLink = data.link;
+    final Uri deepLink = data?.link;
 
     if (deepLink != null) {
+      print('this is the deeplink');
       print(deepLink.queryParameters['id']);
-      Navigator.pushNamed( context, '/invite',
-        arguments: <String, String>{
-          'id': deepLink.queryParameters['id'],
-        },
-      );
-      //Navigator.pushNamed(context, '/invite', arguments: deepLink.queryParameters['id']);
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (BuildContext context) => StudyInvite(id:deepLink.queryParameters['id']),
+      //   ),
+      // );
+      Navigator.pushNamed(context, '/invite', arguments: deepLink.queryParameters['id']);
     }
 
     // if(deepLink.path = '')
