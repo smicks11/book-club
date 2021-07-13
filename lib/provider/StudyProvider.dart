@@ -27,6 +27,7 @@ class StudyProvider with ChangeNotifier {
         courseCode: element.get("courseCode"),
         location: element.get("location"),
         when: element.get("when"),
+
       );
       newTutorialList.add(tutorialModel);
 
@@ -61,6 +62,7 @@ class StudyProvider with ChangeNotifier {
         courseCode: element.get("courseCode"),
         location: element.get("location"),
         when: element.get("when"),
+        meetingDays: element.get("meetingDays"),
         // forum: element.get({"comment": "comment", "userID": "userID"}),
         userID: element.get('userID'),
       );

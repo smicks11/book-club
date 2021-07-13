@@ -20,12 +20,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   UserProvider userProvider;
-  List _read = ["Morning", "Evening"];
+  List _read = ["Morning", "Evening","Both"];
   String _firstSelectedOption;
   String _secondSelectedOption;
   String _thirdSelectedOption;
 
-  List _time = ["Weekdays", "Weekends"];
+  List _time = ["Weekdays", "Weekends", "Both"];
   List getTime;
   List _timeTable = ["Yes", "No, i will do it myself"];
   String weekDaysFrame = "Mon Tue Wed Thur Fri";
@@ -39,14 +39,17 @@ class _HomePageState extends State<HomePage> {
 
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserProvider>(context, listen: false).getUserData(context);
+    });
   }
 
   updateUserData() async{
     User currentUser = FirebaseAuth.instance.currentUser;
     print(currentUser.uid);
     var courses = await FirebaseFirestore.instance.collection("User").doc(currentUser.uid).update({
-      "readingSession": readingSession,
-      "readingDays": readingDays
+      "readingSession": readingSession.toLowerCase(),
+      "readingDays": readingDays.toLowerCase()
     }).then((value) {
       Navigator.of(context).push(MaterialPageRoute(
           builder: (ctx) => PageViewScreen()));
@@ -69,7 +72,7 @@ class _HomePageState extends State<HomePage> {
           return Column(
             children: [
               CustomText(
-                  text: "Hi ${e.fullName.split(" ")[0]} 🥳",
+                  text: "Hi ${e.fullName == '' ?  widget.name : e.fullName.split(" ")[0]} 🥳",
                   size: 20,
                   color: white,
                   weight: FontWeight.w500),
@@ -99,7 +102,7 @@ class _HomePageState extends State<HomePage> {
             child: Container(
               alignment: Alignment.center,
               height: 65,
-              width: MediaQuery.of(context).size.height * 0.2,
+              padding: const EdgeInsets.symmetric(horizontal: 30),
               decoration: BoxDecoration(
                 color: readingSession == e ? buttonColor : white,
                 borderRadius: BorderRadius.circular(30),
@@ -131,7 +134,7 @@ class _HomePageState extends State<HomePage> {
             child: Container(
               alignment: Alignment.center,
               height: 65,
-              width: MediaQuery.of(context).size.height * 0.2,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
                 color: readingDays == e ? buttonColor : white,
                 borderRadius: BorderRadius.circular(30),

@@ -8,6 +8,7 @@ import 'package:book_club/screens/Homescreen/preferences.dart';
 import 'package:book_club/screens/Library/library.dart';
 import 'package:book_club/screens/Study/study.dart';
 import 'package:book_club/screens/Study/studyDetail.dart';
+import 'package:book_club/screens/Study/studyGroupInvite.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
 import 'package:book_club/shared/tab.dart';
@@ -26,7 +27,7 @@ class CuratedTimeTable extends StatefulWidget {
   _CuratedTimeTableState createState() => _CuratedTimeTableState();
 }
 
-class _CuratedTimeTableState extends State<CuratedTimeTable> {
+class _CuratedTimeTableState extends State<CuratedTimeTable> with WidgetsBindingObserver{
   TimeTableProvider timeTableProvider;
   List days = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'];
   List weekdays = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri'];
@@ -42,37 +43,44 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
   @override
   void initState() {
     super.initState();
-    initDynamicLinks();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserProvider>(context, listen: false).getUserData(context);
       getstudyTimetable();
     });
+    initDynamicLinks();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   Future<void> initDynamicLinks() async {
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
           final Uri deepLink = dynamicLink.link;
-          print('This is the deeplink');
-          print(deepLink.path);
-
           if (deepLink != null) {
-            // ignore: unawaited_futures
-            Navigator.pushNamed(context, deepLink.path);
+            print(deepLink.queryParameters['id']);
+            Navigator.pushNamed(context, '/invite', arguments: deepLink.queryParameters['id']);
           }
         }, onError: (OnLinkErrorException e) async {
       print('onLinkError');
       print(e.message);
     });
 
-    final PendingDynamicLinkData data =
-    await FirebaseDynamicLinks.instance.getInitialLink();
-    final Uri deepLink = data?.link;
+    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    final Uri deepLink = data.link;
 
     if (deepLink != null) {
-      // ignore: unawaited_futures
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => Library()));
+      print(deepLink.queryParameters['id']);
+      Navigator.pushNamed( context, '/invite',
+        arguments: <String, String>{
+          'id': deepLink.queryParameters['id'],
+        },
+      );
+      //Navigator.pushNamed(context, '/invite', arguments: deepLink.queryParameters['id']);
     }
 
     // if(deepLink.path = '')

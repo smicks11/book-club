@@ -6,10 +6,11 @@ class StudyGroupModel {
   final String when;
   final String userID;
   final String id;
+  final String meetingDays;
   final ForumModel forum;
   final List members;
 
-  StudyGroupModel({this.forum,this.id,this.members,
+  StudyGroupModel({this.forum,this.meetingDays, this.id,this.members,
       this.courseCode, this.location, this.when, this.userID});
 }
 

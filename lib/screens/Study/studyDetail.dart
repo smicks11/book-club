@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'package:flutter_hex_color/flutter_hex_color.dart';
 import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class StudyDetail extends StatefulWidget {
   final String courseCode;
@@ -38,9 +39,15 @@ class _StudyDetailState extends State<StudyDetail> {
   StudyProvider studyProvider;
 
   String link = '';
+  bool _isCreatingLink = false;
+  String _linkMessage;
 
-  Future<Uri> createDynamicLink(String id) async {
+  // ignore: missing_return
+  Future<void> createDynamicLink(String id) async {
 
+    setState(() {
+      _isCreatingLink = true;
+    });
     final DynamicLinkParameters parameters = DynamicLinkParameters(
       uriPrefix: 'https://funet.page.link',
       link: Uri.parse('https://funet.page.link/$id'),
@@ -62,11 +69,12 @@ class _StudyDetailState extends State<StudyDetail> {
     url = shortLink.shortUrl;
 
     setState(() {
-      link = shortLink.toString();
+      _linkMessage = url.toString();
+      _isCreatingLink = false;
     });
 
-    print(url);
-    //return shortUrl;
+
+    print(_linkMessage);
   }
 
 
@@ -87,7 +95,7 @@ class _StudyDetailState extends State<StudyDetail> {
           .doc(widget.id)
           .set({
         'forum': FieldValue.arrayUnion([
-          {"comment": comment, "userId": userID.uid},
+          {"comment": comment, "userId": userID.displayName},
         ])
       }, SetOptions(merge: true));
       getComments(widget.id);
@@ -109,11 +117,10 @@ class _StudyDetailState extends State<StudyDetail> {
       comments.forEach((element) {
         CommentModel commentModel = CommentModel(
           comment: element['comment'],
-          uid: element['uid'],
+          uid: element['userId'],
         );
         mainComment.add(commentModel);
       });
-      print(widget.id);
     });
 
     finalComment = mainComment;
@@ -128,8 +135,8 @@ class _StudyDetailState extends State<StudyDetail> {
     UserProvider user;
     studyProvider = Provider.of<StudyProvider>(context);
 
-    final displayName = Provider.of<UserProvider>(context, listen: true);
-    displayName.getUserData(context);
+   // final displayName = Provider.of<UserProvider>(context, listen: true);
+    //displayName.getUserData(context);
     //studyProvider.getComments();
     return Scaffold(
       //resizeToAvoidBottomInset: false,
@@ -159,19 +166,30 @@ class _StudyDetailState extends State<StudyDetail> {
                         Spacer(),
                         GestureDetector(
                             onTap: () {
-                              createDynamicLink(widget.id);
+                              print('is this thing even working');
+                              Clipboard.setData(ClipboardData(text: _linkMessage));
+                               createDynamicLink(widget.id);
                             },
-                            child: Icon(
-                              Icons.share,
-                              color: Colors.white,
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              child: Icon(
+                                Icons.share,
+                                color: Colors.white,
+                              ),
                             )),
                       ],
                     ),
                     SizedBox(height: 24),
-                    CustomText(
-                        text: widget.courseCode,
-                        size: 24,
-                        color: HexColor('FFFFFF')),
+                    GestureDetector(
+                      onTap: () {
+                        createDynamicLink(widget.id);
+                      },
+                      child: CustomText(
+                          text: widget.courseCode,
+                          size: 24,
+                          color: HexColor('FFFFFF')),
+                    ),
                   ],
                 ),
               ),
@@ -189,13 +207,13 @@ class _StudyDetailState extends State<StudyDetail> {
                                     children: [
                                       CircleAvatar(
                                           backgroundColor: buttonColor,
-                                          child: Text('IA')
+                                          child: Text('${finalComment[index].uid.split(" ")[0][0]}${finalComment[index].uid.split(" ")[1][0]}')
                                       ),
                                       SizedBox(width: 10,),
                                       Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text('Inioluwa', style: TextStyle(
+                                          Text(finalComment[index].uid, style: TextStyle(
                                             color: HexColor('747474'),
                                             fontWeight: FontWeight.bold,
                                               fontSize: 12

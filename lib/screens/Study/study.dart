@@ -49,11 +49,12 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _form1Key = GlobalKey<FormState>();
   final GlobalKey<FormState> _studyGroupKey = GlobalKey<FormState>();
   String courseCode = 'CSC 320';
-  String location;
+  String location = '';
   var datTime = 'Saturday';
+  StateSetter studyState;
 
- Future<Uri> createDynamicLink(String id) async {
 
+  Future<Uri> createDynamicLink(String id) async {
     final DynamicLinkParameters parameters = DynamicLinkParameters(
       uriPrefix: 'https://funet.page.link',
       link: Uri.parse('https://funet.page.link/?id=$id'),
@@ -71,7 +72,6 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
     final Uri shortUrl = shortDynamicLink.shortUrl;
     return shortUrl;
   }
-
 
   void validation() async {
     final FormState _form = _form1Key.currentState;
@@ -94,30 +94,34 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
     await Firebase.initializeApp();
     final userData = Provider.of<UserProvider>(context, listen: false);
     try {
-      final docRef =  FirebaseFirestore.instance.collection("studyGroup").add({
+      final docRef = FirebaseFirestore.instance.collection("studyGroup").add({
         'userID': userData.userModel.userID,
         'courseCode': courseCode,
         'location': location,
         'when': datTime,
-        'members' : FieldValue.arrayUnion([userData.userModel.userID,])
-      }).then((value){
-    Provider.of<StudyProvider>(context, listen: false)
-        .getStudyGroup(context);
-    showTopSnackBar(
-      context,
-      CustomSnackBar.success(
-        message:
-        "Study Group created successfully",
-      ),
-    );
-    var documentId = value.id;
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (ctx) =>
-                StudyDetail(courseCode: courseCode, when: datTime, location: location, id:documentId.toString())));
-    });
-
+        'meetingDays' : selectedDay,
+        'members': FieldValue.arrayUnion([
+          userData.userModel.userID,
+        ])
+      }).then((value) {
+        Provider.of<StudyProvider>(context, listen: false)
+            .getStudyGroup(context);
+        showTopSnackBar(
+          context,
+          CustomSnackBar.success(
+            message: "Study Group created successfully",
+          ),
+        );
+        var documentId = value.id;
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (ctx) => StudyDetail(
+                    courseCode: courseCode,
+                    when: datTime,
+                    location: location,
+                    id: documentId.toString())));
+      });
 
       // myDialogBox();
     } on PlatformException catch (e) {
@@ -125,7 +129,7 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
     }
   }
 
-  StateSetter studyState;
+
   List<String> courseList = [
     "CSC 320",
     "CSC 310",
@@ -133,6 +137,9 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
     "CSC 300",
     "CSC 220"
   ];
+
+  List<String> daysList = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday","Saturday","Sunday"];
+  String selectedDay = "Monday";
 
   Widget _buildFields(
       {String labelText,
@@ -152,7 +159,6 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
         cursorColor: Colors.black,
         // controller: controller,
         decoration: InputDecoration(
-
           labelText: labelText,
           suffixIcon: textIcon,
           contentPadding: EdgeInsets.only(left: 16),
@@ -244,7 +250,8 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                           elevation: 2.0,
                           onPressed: () => showCupertinoModalBottomSheet(
                               context: context,
-                              builder: (context) => StatefulBuilder(builder:
+                              builder: (context) => StatefulBuilder(
+                                  builder:
                                       (BuildContext context,
                                           StateSetter myState) {
                                     //studyState = setState;
@@ -351,7 +358,7 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                                                               );
                                                             }).toList(),
                                                             onChanged: (value) {
-                                                              setState(() {
+                                                              studyState(() {
                                                                 courseCode =
                                                                     value;
                                                               });
@@ -446,7 +453,7 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                                                         _buildFields(
                                                             labelText: "",
                                                             onChanged: (value) {
-                                                              setState(() {
+                                                              studyState(() {
                                                                 location =
                                                                     value;
                                                               });
@@ -487,6 +494,7 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                     ),
                   ),
                   Scaffold(
+                    resizeToAvoidBottomInset: true,
                       backgroundColor: backgroundColor,
                       floatingActionButton: FloatingActionButton(
                           backgroundColor: buttonColor,
@@ -496,14 +504,14 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                               context: context,
                               builder: (context) => StatefulBuilder(builder:
                                       (BuildContext context,
-                                          StateSetter myState) {
-                                    //studyState = setState;
+                                          StateSetter setState) {
+                                    studyState = setState;
                                     return Material(
                                       child: Container(
                                           height: MediaQuery.of(context)
                                                   .size
                                                   .height *
-                                              0.8,
+                                              0.9,
                                           color: Colors.white,
                                           child: Padding(
                                             padding: const EdgeInsets.all(24.0),
@@ -601,7 +609,7 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                                                               );
                                                             }).toList(),
                                                             onChanged: (value) {
-                                                              setState(() {
+                                                              studyState(() {
                                                                 courseCode =
                                                                     value;
                                                               });
@@ -623,7 +631,7 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                                                       children: [
                                                         CustomText(
                                                             text:
-                                                                'Choose Date & Time',
+                                                                'Choose Time',
                                                             size: 16,
                                                             weight:
                                                                 FontWeight.w400,
@@ -634,24 +642,35 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                                                         ),
                                                         GestureDetector(
                                                           onTap: () {
-                                                            DatePicker.showDateTimePicker(
-                                                                context,
-                                                                showTitleActions:
-                                                                    true,
-                                                                onChanged:
-                                                                    (date) {},
-                                                                onConfirm:
-                                                                    (date) {
-                                                              setState(() {
-                                                                datTime = date
-                                                                    .toString();
-                                                              });
-                                                              print(
-                                                                  'confirm $date');
-                                                            },
-                                                                currentTime:
-                                                                    DateTime
-                                                                        .now());
+                                                            DatePicker.showTime12hPicker(context, showTitleActions: true,
+                                                                onChanged: (date) {
+                                                                  print('change $date in time zone ' +
+                                                                      date.timeZoneOffset.inHours.toString());
+                                                                }, onConfirm: (date) {
+                                                                    studyState(() {
+                                                                      datTime = date
+                                                                          .toString();
+                                                                    });
+                                                                    print(date);
+                                                                }, currentTime: DateTime.now());
+                                                            // DatePicker.showTime12hPicker(
+                                                            //     context,
+                                                            //     showTitleActions:
+                                                            //         true,
+                                                            //     onChanged:
+                                                            //         (date) {},
+                                                            //     onConfirm:
+                                                            //         (date) {
+                                                            //   setState(() {
+                                                            //     datTime = date
+                                                            //         .toString();
+                                                            //   });
+                                                            //   print(
+                                                            //       'confirm $date');
+                                                            // },
+                                                            //     currentTime:
+                                                            //         DateTime
+                                                            //             .now());
                                                           },
                                                           child: Container(
                                                             height: 68,
@@ -666,9 +685,72 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                                                             color: HexColor(
                                                                 'FAFAFA'),
                                                             child: Text(
-                                                                '${datTime == '' ? 'Saturday' : datTime}'),
+                                                                '${datTime == '' ? DateTime.now() : datTime}'),
                                                           ),
-                                                        )
+                                                        ),
+                                                        SizedBox(
+                                                          height: 16,
+                                                        ),
+                                                        CustomText(
+                                                            text:
+                                                            'Choose Meeting Days',
+                                                            size: 16,
+                                                            weight:
+                                                            FontWeight.w400,
+                                                            color: HexColor(
+                                                                '0F193B')),
+                                                        SizedBox(
+                                                          height: 16,
+                                                        ),
+                                                        Container(
+                                                          height: 60,
+                                                          width: double.infinity,
+                                                          decoration: BoxDecoration(
+                                                              color: HexColor(
+                                                                  'F0F0F0'),
+                                                              borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                  12)),
+                                                          child: DropdownButton(
+                                                            isExpanded: true,
+                                                            hint: Text(
+                                                              "Choose Day",
+                                                              style: TextStyle(
+                                                                  fontSize: 14,
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontWeight:
+                                                                  FontWeight
+                                                                      .w500),
+                                                            ),
+                                                            value: selectedDay,
+                                                            items: daysList
+                                                                .map((String
+                                                            value) {
+                                                              return DropdownMenuItem(
+                                                                value: value,
+                                                                child: Text(
+                                                                  value,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                      14,
+                                                                      color:
+                                                                      primaryTextColor,
+                                                                      fontWeight:
+                                                                      FontWeight
+                                                                          .w500),
+                                                                ),
+                                                              );
+                                                            }).toList(),
+                                                            onChanged: (value) {
+                                                              studyState(() {
+                                                                selectedDay =
+                                                                    value;
+                                                              });
+                                                            },
+                                                          ),
+                                                        ),
                                                       ],
                                                     ),
                                                     SizedBox(
@@ -684,7 +766,7 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                                                       children: [
                                                         CustomText(
                                                             text:
-                                                                'Enter Location',
+                                                                'Enter MeetUp Location ( Optional )',
                                                             size: 16,
                                                             weight:
                                                                 FontWeight.w400,
@@ -696,7 +778,7 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                                                         _buildFields(
                                                             labelText: "",
                                                             onChanged: (value) {
-                                                              setState(() {
+                                                              studyState(() {
                                                                 location =
                                                                     value;
                                                               });
@@ -728,32 +810,27 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
                             return Column(
-                              children:  study.studyGroupModelList.map((e) => 
-                                   GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (ctx) => 
-                                              StudyDetail(
-                                                  courseCode: e.courseCode,
-                                                  when: e.when,
-                                                  location: e.location,
-                                                id: e.id,
-                                                      )
-                                                      ));
-                                    },
-                                    child: Column(
-                                        children:[
-                                          studyCard(
-                                                courseCode: e.courseCode,
-                                                location: e.location,
-                                                date: e.when,
-                                              ),
-                                        ]
-                                        ))
-                              ).toList()
-                              ,
+                              children: study.studyGroupModelList
+                                  .map((e) => GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (ctx) => StudyDetail(
+                                                      courseCode: e.courseCode,
+                                                      when: e.when,
+                                                      location: e.location,
+                                                      id: e.id,
+                                                    )));
+                                      },
+                                      child: Column(children: [
+                                        studyCard(
+                                          courseCode: e.courseCode,
+                                          location: e.location,
+                                          date: e.when,
+                                        ),
+                                      ])))
+                                  .toList(),
                             );
                           },
                         ),

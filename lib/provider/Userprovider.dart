@@ -19,7 +19,7 @@ class UserProvider with ChangeNotifier {
     userSnapShots.docs.forEach((element) {
       if (currentUser.uid == element.get("UserId")) {
         userModel = UserModel(
-            fullName: element.get("FullName"),
+            fullName: element.get("fullName"),
             dept: element.get("Dept"),
             level: element.get("Level"),
             userID: element.get("UserId"),
