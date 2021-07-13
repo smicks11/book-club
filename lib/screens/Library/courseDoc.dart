@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hex_color/flutter_hex_color.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class CourseDoc extends StatefulWidget {
   final String courseCode;
@@ -31,24 +32,12 @@ class _CourseDocState extends State<CourseDoc>
   }
   TabController _tabController;
 
-  // Future<void> getDocuments(){
-  //   //Fetch file from FirebaseStorage first
-  //   LaunchFile.loadFromFirebase(context, file)
-  //   //Creating PDF file at disk for ios and android & assigning pdfUrl for web
-  //       .then((url) => LaunchFile.createFileFromPdfUrl(url).then(
-  //         (f) => setState(
-  //           () {
-  //         if (f is File) {
-  //           pathPDF = f.path;
-  //         } else if (url is Uri) {
-  //           //Open PDF in tab (Web)
-  //           pdfUrl = url.toString();
-  //         }
-  //       },
-  //     ),
-  //   ));
-  // }
-  //}
+  Future<void> getDocuments(){
+    //Fetch file from FirebaseStorage first
+
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -114,9 +103,8 @@ class _CourseDocState extends State<CourseDoc>
                   Scaffold(
                     backgroundColor: backgroundColor,
                     body: Container(
-                      child: Text(
-                        'Documents'
-                      ),
+                      child: SfPdfViewer.network(
+                          'https://firebasestorage.googleapis.com/v0/b/book-club-226bb.appspot.com/o/CSC%20306%2FCsc%20306%20note.pdf?alt=media&token=8aef9368-7dd4-4741-9144-0a6178c01b49')
                     ),
                   ),
                   Scaffold(
