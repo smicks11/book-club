@@ -1,18 +1,19 @@
-import 'package:book_club/models/studyGroup.dart';
 import 'package:book_club/provider/StudyProvider.dart';
 import 'package:book_club/provider/Userprovider.dart';
 import 'package:book_club/screens/Auth/SignIn_Page.dart';
 import 'package:book_club/screens/Study/studyDetail.dart';
+import 'package:book_club/screens/Study/studyGroupInvite.dart';
 import 'package:book_club/shared/button.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
-// import 'package:book_club/shared/tab.dart';
+import 'package:book_club/shared/tab.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hex_color/flutter_hex_color.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +27,6 @@ class Study extends StatefulWidget {
 }
 
 class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
-  final List<StudyGroupModel> forum = [];
   @override
   TabController _tabController;
   void initState() {
@@ -50,6 +50,27 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
   String location;
   var datTime = 'Saturday';
 
+ Future<Uri> createDynamicLink(String id) async {
+
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
+      uriPrefix: 'https://funet.page.link',
+      link: Uri.parse('https://funet.page.link/?id=$id'),
+      androidParameters: AndroidParameters(
+        packageName: 'com.example.book_club',
+        minimumVersion: 1,
+      ),
+      iosParameters: IosParameters(
+        bundleId: 'com.example.book_club',
+        minimumVersion: '1.0.1',
+      ),
+    );
+
+    final ShortDynamicLink shortDynamicLink = await parameters.buildShortLink();
+    final Uri shortUrl = shortDynamicLink.shortUrl;
+    return shortUrl;
+  }
+
+
   void validation() async {
     final FormState _form = _form1Key.currentState;
     await Firebase.initializeApp();
@@ -71,16 +92,23 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
     await Firebase.initializeApp();
     final userData = Provider.of<UserProvider>(context, listen: false);
     try {
-      FirebaseFirestore.instance.collection("studyGroup").add({
+      final docRef =  FirebaseFirestore.instance.collection("studyGroup").add({
         'userID': userData.userModel.userID,
         'courseCode': courseCode,
         'location': location,
         'when': datTime,
-        'forum': "kjbkjhj"
-        // 'Forum' : forum
-      }).then((value) => Provider.of<StudyProvider>(context, listen: false)
-          .getStudyGroup(context));
-      Navigator.of(context).pop();
+      }).then((value){
+    Provider.of<StudyProvider>(context, listen: false)
+        .getStudyGroup(context);
+    var documentId = value.id;
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (ctx) =>
+                StudyDetail(courseCode: courseCode, when: datTime, location: location, id:documentId.toString())));
+    });
+
+
       // myDialogBox();
     } on PlatformException catch (e) {
       print(e.message.toString());
@@ -668,6 +696,7 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                                                 GestureDetector(
                                                     onTap: () async {
                                                       createStudyGroup();
+                                                      //createDynamicLink();
                                                     },
                                                     child: button(
                                                         text:
@@ -684,25 +713,32 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
                             return Column(
-                              children: study.studyGroupModelList
-                                  .map((e) => GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (ctx) => StudyDetail(
-                                                    courseCode: e.courseCode,
-                                                    when: e.when,
-                                                    location: e.location)));
-                                      },
-                                      child: Column(children: [
-                                        studyCard(
-                                          courseCode: e.courseCode,
-                                          location: e.location,
-                                          date: e.when,
-                                        ),
-                                      ])))
-                                  .toList(),
+                              children:  study.studyGroupModelList.map((e) => 
+                                   GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (ctx) => 
+                                              StudyDetail(
+                                                  courseCode: e.courseCode,
+                                                  when: e.when,
+                                                  location: e.location,
+                                                id: e.id,
+                                                      )
+                                                      ));
+                                    },
+                                    child: Column(
+                                        children:[
+                                          studyCard(
+                                                courseCode: e.courseCode,
+                                                location: e.location,
+                                                date: e.when,
+                                              ),
+                                        ]
+                                        ))
+                              ).toList()
+                              ,
                             );
                           },
                         ),
