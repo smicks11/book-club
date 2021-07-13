@@ -7,8 +7,9 @@ class StudyGroupModel {
   final String userID;
   final String id;
   final ForumModel forum;
+  final List members;
 
-  StudyGroupModel({this.forum,this.id,
+  StudyGroupModel({this.forum,this.id,this.members,
       this.courseCode, this.location, this.when, this.userID});
 }
 

@@ -9,6 +9,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 // import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -62,6 +64,13 @@ class _SignUpPageState extends State<SignUpPage> {
           "readingSession" : "",
           "admin" : admin
         }).then((res) {
+          showTopSnackBar(
+            context,
+            CustomSnackBar.success(
+              message:
+              "Account Created Successfully",
+            ),
+          );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
@@ -120,10 +129,14 @@ class _SignUpPageState extends State<SignUpPage> {
         cursorColor: Colors.black,
         // controller: controller,
         decoration: InputDecoration(
+          border: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          errorBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
           labelText: labelText,
           suffixIcon: textIcon,
           contentPadding: EdgeInsets.only(left: 16),
-          border: UnderlineInputBorder(borderSide: BorderSide.none),
           labelStyle: TextStyle(
               fontSize: 14,
               color: primaryTextColor,

@@ -6,6 +6,8 @@ import 'package:book_club/shared/customtext.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 // import 'package:provider/provider.dart';
 
 class SignInPage extends StatefulWidget {
@@ -22,33 +24,32 @@ final GlobalKey<FormState> _signKey = GlobalKey<FormState>();
 class _SignInPageState extends State<SignInPage> {
   Future<void> validation() async {
     final FormState _form = _signKey.currentState;
-    if (!_form.validate()) {
-      try {
-        // UserCredential result = await FirebaseAuth.instance
-        //     .signInWithEmailAndPassword(email: emailL, password: passwordL)
-        FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: emailL, password: passwordL)
-            .then((result) {
-              print(result);
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => HomePage()));
-        });
-        setState(() {
-          loading = false;
-          emailL = '';
-          passwordL = '';
-        });
+    try {
+      // UserCredential result = await FirebaseAuth.instance
+      //     .signInWithEmailAndPassword(email: emailL, password: passwordL)
+      FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: emailL, password: passwordL)
+          .then((result) {
+        print(result);
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => HomePage()));
+      });
+      setState(() {
+        loading = false;
+        emailL = '';
+        passwordL = '';
+      });
 
-        // print(result.user);
-      } on PlatformException catch (e) {
-        print(e.message);
-        // ignore: deprecated_member_use
-        // _scaffoldKey.currentState.showSnackBar(SnackBar(
-        //   content: Text(e.message),
-        // ));
-      }
-    } else {
-      print("No");
+      // print(result.user);
+    } on PlatformException catch (e) {
+      print(e.message);
+      showTopSnackBar(
+        context,
+        CustomSnackBar.error(
+          message:
+          "Something went wrong. Please check your credentials and try again",
+        ),
+      );
     }
   }
 
@@ -120,12 +121,7 @@ class _SignInPageState extends State<SignInPage> {
                         _buildFields(
                             labelText: "Email Address",
                             validator: (value) {
-                              if (value == "") {
-                                return "Please fill Email";
-                              } else if (!regExp.hasMatch(value)) {
-                                return "Email Is Invalid";
-                              }
-                              return "";
+
                             },
                             onChanged: (value) {
                               setState(() {
@@ -149,14 +145,6 @@ class _SignInPageState extends State<SignInPage> {
                               ),
                             ),
                             labelText: "Password",
-                            validator: (value) {
-                              if (value == "") {
-                                return "Please FIll Password";
-                              } else if (value.length < 8) {
-                                return "Password is too short";
-                              }
-                              return "";
-                            },
                             onChanged: (value) {
                               setState(() {
                                 passwordL = value;

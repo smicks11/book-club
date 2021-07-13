@@ -18,6 +18,8 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class Study extends StatefulWidget {
   const Study({Key key}) : super(key: key);
@@ -97,11 +99,19 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
         'courseCode': courseCode,
         'location': location,
         'when': datTime,
+        'members' : FieldValue.arrayUnion([userData.userModel.userID,])
       }).then((value){
     Provider.of<StudyProvider>(context, listen: false)
         .getStudyGroup(context);
+    showTopSnackBar(
+      context,
+      CustomSnackBar.success(
+        message:
+        "Study Group created successfully",
+      ),
+    );
     var documentId = value.id;
-    Navigator.push(
+    Navigator.pushReplacement(
         context,
         MaterialPageRoute(
             builder: (ctx) =>
@@ -142,10 +152,15 @@ class _StudyState extends State<Study> with SingleTickerProviderStateMixin {
         cursorColor: Colors.black,
         // controller: controller,
         decoration: InputDecoration(
+
           labelText: labelText,
           suffixIcon: textIcon,
           contentPadding: EdgeInsets.only(left: 16),
-          border: UnderlineInputBorder(borderSide: BorderSide.none),
+          border: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          errorBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
           labelStyle: TextStyle(
               fontSize: 14,
               color: primaryTextColor,

@@ -2,6 +2,7 @@ import 'package:book_club/models/userModel.dart';
 import 'package:book_club/provider/Userprovider.dart';
 import 'package:book_club/provider/onBoarding.dart';
 import 'package:book_club/screens/Auth/SignIn_Page.dart';
+import 'package:book_club/screens/Homescreen/Profile.dart';
 import 'package:book_club/screens/Homescreen/notifications.dart';
 import 'package:book_club/screens/Homescreen/preferences.dart';
 import 'package:book_club/shared/constants.dart';
@@ -27,28 +28,36 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
   List weekdays = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri'];
   List weekends = ['Sat', 'Sun'];
   String selectedDay = 'Mon';
+  String selectDay = '';
 
-  List timetable = [];
+  List monday = [];
+  List tuesday =[];
+  List mon, tue,wed,thur,fri,sat,sun =[""];
   StateSetter ttTable;
 
   @override
   void initState() {
     super.initState();
-    getTimetable();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserProvider>(context, listen: false).getUserData(context);
-      //Provider.of<TimeTableProvider>(context, listen: false).getStudyTimeTable(context);
+      getstudyTimetable();
     });
   }
 
-  Future<List> getTimetable() async {
-    List timetableList = [];
-    final timetables = FirebaseFirestore.instance.collection('Timetable');
-    timetables.get().then((querySnapshot) {
-      final timeTableData = querySnapshot.docs.map((doc) => doc.data());
-      timetableList.add(timeTableData);
+  Future getstudyTimetable() async {
+    var instance = FirebaseFirestore.instance;
+    CollectionReference study = instance.collection('Timetable');
+    QuerySnapshot snapshot = await study.doc('study')
+        .get()
+        .then((value) { // ignore: missing_return
+      Map<String, dynamic> data = new Map<String, dynamic>.from(value.data());
+      setState(() {
+        mon = data['monday'];
+        tue = data['tuesday'];
+      });
+      print(mon[0]['courseCode']);
     });
-    return timetableList;
   }
 
   @override
@@ -110,11 +119,10 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                       ),
                                       GestureDetector(
                                         onTap: () async {
-                                          await FirebaseAuth.instance.signOut();
-                                          Navigator.of(context).pushReplacement(
+                                          Navigator.of(context).push(
                                               MaterialPageRoute(
                                                   builder: (ctx) =>
-                                                      SignInPage()));
+                                                      Profile()));
                                         },
                                         child: CircleAvatar(
                                           backgroundColor: Colors.white,
@@ -152,6 +160,7 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                                 onTap: () {
                                                   setState(() {
                                                     selectedDay = e;
+                                                    selectDay = e;
                                                   });
                                                 },
                                                 child: Container(
@@ -178,6 +187,7 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                                 onTap: () {
                                                   setState(() {
                                                     selectedDay = e;
+                                                    selectDay = e;
                                                   });
                                                 },
                                                 child: Container(
@@ -212,13 +222,14 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12)),
-                          child: Row(
+                          child:
+                          Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Timetable(
-                                  course: 'CSC 203',
-                                  time: '05 AM - 07 PM',
+                                  course: '${mon[0]['courseCode']}',
+                                  time: '${mon[0]['time']} AM',
                                 ),
                                 Container(
                                   height: 60,
@@ -226,15 +237,10 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                   color: HexColor('E4E7F1'),
                                 ),
                                 Timetable(
-                                  course: 'CSC 203',
-                                  time: '05 AM - 07 PM',
-                                )
+                                  course: '${mon[1]['courseCode']}',
+                                  time: '${mon[1]['time']} AM',
+                                ),
                               ]
-
-                              //
-
-                              //
-
                               ),
                         ),
                       )
