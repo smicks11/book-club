@@ -5,11 +5,15 @@ import 'package:book_club/screens/Auth/SignIn_Page.dart';
 import 'package:book_club/screens/Homescreen/Profile.dart';
 import 'package:book_club/screens/Homescreen/notifications.dart';
 import 'package:book_club/screens/Homescreen/preferences.dart';
+import 'package:book_club/screens/Library/library.dart';
+import 'package:book_club/screens/Study/study.dart';
+import 'package:book_club/screens/Study/studyDetail.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
 import 'package:book_club/shared/tab.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hex_color/flutter_hex_color.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -38,11 +42,40 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
   @override
   void initState() {
     super.initState();
-
+    initDynamicLinks();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserProvider>(context, listen: false).getUserData(context);
       getstudyTimetable();
     });
+  }
+
+  Future<void> initDynamicLinks() async {
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+          final Uri deepLink = dynamicLink.link;
+          print('This is the deeplink');
+          print(deepLink.path);
+
+          if (deepLink != null) {
+            // ignore: unawaited_futures
+            Navigator.pushNamed(context, deepLink.path);
+          }
+        }, onError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
+    });
+
+    final PendingDynamicLinkData data =
+    await FirebaseDynamicLinks.instance.getInitialLink();
+    final Uri deepLink = data?.link;
+
+    if (deepLink != null) {
+      // ignore: unawaited_futures
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => Library()));
+    }
+
+    // if(deepLink.path = '')
   }
 
   Future getstudyTimetable() async {
@@ -238,7 +271,7 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                 ),
                                 Timetable(
                                   course: '${mon[1]['courseCode']}',
-                                  time: '${mon[1]['time']} AM',
+                                  time: '${mon[1]['time']} PM',
                                 ),
                               ]
                               ),

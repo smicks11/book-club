@@ -73,7 +73,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           initialRoute: '/',
           routes: <String, WidgetBuilder>{
-            '/hello': (BuildContext context) => PageView(),
+            '/hello': (BuildContext context) => StudyDetail(),
           },
           navigatorObservers: [Statusbarz.instance.observer],
           theme: ThemeData(
