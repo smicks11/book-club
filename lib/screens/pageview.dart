@@ -1,5 +1,5 @@
 
-import 'package:book_club/screens/library.dart';
+import 'package:book_club/screens/Library/library.dart';
 import 'package:book_club/screens/Study/study.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 // import 'package:book_club/shared/constants.dart';
@@ -37,28 +37,7 @@ class _PageViewScreenState extends State<PageViewScreen> with WidgetsBindingObse
     super.dispose();
   }
 
-  // void initDynamicLinks() async {
-  //   FirebaseDynamicLinks.instance.onLink(
-  //       onSuccess: (PendingDynamicLinkData dynamicLink) async {
-  //         final Uri deepLink = dynamicLink?.link;
-  //
-  //         if (deepLink != null) {
-  //           Navigator.pushNamed(context, deepLink.path);
-  //         }
-  //       },
-  //       onError: (OnLinkErrorException e) async {
-  //         print('onLinkError');
-  //         print(e.message);
-  //       }
-  //   );
-  //
-  //   final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
-  //   final Uri deepLink = data?.link;
-  //
-  //   if (deepLink != null) {
-  //     Navigator.pushNamed(context, deepLink.path);
-  //   }
-  // }
+
 
   @override
   Widget build(BuildContext context) {

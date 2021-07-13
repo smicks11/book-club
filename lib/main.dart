@@ -108,7 +108,7 @@ class MyApp extends StatelessWidget {
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (ctx, snapshot) {
               if (snapshot.hasData) {
-                return PageViewScreen();
+                return SignInPage();
               } else {
                 return SignInPage();
               }
