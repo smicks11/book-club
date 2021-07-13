@@ -1,16 +1,15 @@
-<<<<<<< HEAD
 import 'package:book_club/models/commentmodel.dart';
 import 'package:book_club/provider/StudyProvider.dart';
 import 'package:book_club/provider/Userprovider.dart';
-=======
 import 'package:book_club/provider/StudyProvider.dart';
 import 'package:book_club/shared/button.dart';
->>>>>>> 9c21482417de6d6066eafc86908f7e09c494aebc
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hex_color/flutter_hex_color.dart';
 import 'package:provider/provider.dart';
 
@@ -19,24 +18,23 @@ class StudyDetail extends StatefulWidget {
   final String when;
   final String location;
   final String id;
-  const StudyDetail(
-      {Key key,
-        this.id,
-      this.courseCode,
-      this.when,
-      this.location,})
-      : super(key: key);
+  const StudyDetail({
+    Key key,
+    this.id,
+    this.courseCode,
+    this.when,
+    this.location,
+  }) : super(key: key);
 
   @override
   _StudyDetailState createState() => _StudyDetailState();
 }
 
 class _StudyDetailState extends State<StudyDetail> {
-
   String url = '';
+  String comment;
 
   Future<Uri> createDynamicLink(String id) async {
-
     final DynamicLinkParameters parameters = DynamicLinkParameters(
       uriPrefix: 'https://funet.page.link',
       link: Uri.parse('https://funet.page.link/?id=$id'),
@@ -49,21 +47,15 @@ class _StudyDetailState extends State<StudyDetail> {
         minimumVersion: '1.0.1',
       ),
     );
+  }
 
-class _StudyDetailState extends State<StudyDetail> {
   List<CommentModel> finalComment = List<CommentModel>.empty(growable: true);
   TextEditingController textController = TextEditingController();
   List comments = [];
   StateSetter forumState;
   StudyProvider studyProvider;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getComments();
-    });
-  }
+ 
 
   void createForumComments() async {
     final userID = FirebaseAuth.instance.currentUser;
@@ -142,33 +134,33 @@ class _StudyDetailState extends State<StudyDetail> {
                 ],
               ),
             )));
-    final ShortDynamicLink shortDynamicLink = await parameters.buildShortLink();
-    final Uri shortUrl = shortDynamicLink.shortUrl;
+    // final ShortDynamicLink shortDynamicLink = await parameters.buildShortLink();
+    // final Uri shortUrl = shortDynamicLink.shortUrl;
 
-    setState(() {
-      url = shortUrl.toString();
-    });
+    // setState(() {
+    //   url = shortUrl.toString();
+    // });
 
-    print(url);
+    // print(url);
     //return shortUrl;
   }
 
   Future<void> initDynamicLinks() async {
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
-          final Uri deepLink = dynamicLink?.link;
+      final Uri deepLink = dynamicLink?.link;
 
-          if (deepLink != null) {
-            // ignore: unawaited_futures
-            Navigator.pushNamed(context, deepLink.path);
-          }
-        }, onError: (OnLinkErrorException e) async {
+      if (deepLink != null) {
+        // ignore: unawaited_futures
+        Navigator.pushNamed(context, deepLink.path);
+      }
+    }, onError: (OnLinkErrorException e) async {
       print('onLinkError');
       print(e.message);
     });
 
     final PendingDynamicLinkData data =
-    await FirebaseDynamicLinks.instance.getInitialLink();
+        await FirebaseDynamicLinks.instance.getInitialLink();
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {
@@ -177,15 +169,16 @@ class _StudyDetailState extends State<StudyDetail> {
     }
   }
 
-
-
+   @override
   void initState() {
-    initDynamicLinks();
+    //  initDynamicLinks();
+    // getComments();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<StudyProvider>(context, listen: false).getStudyGroup(context);
     });
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     UserProvider user;
@@ -193,10 +186,10 @@ class _StudyDetailState extends State<StudyDetail> {
 
     final displayName = Provider.of<UserProvider>(context, listen: true);
     displayName.getUserData(context);
-    //studyProvider.getComments();
+    // studyProvider.getComments();
+    
     return Scaffold(
       backgroundColor: buttonColor,
-<<<<<<< HEAD
       body: CustomScrollView(
         // controller: _scrollController,
         slivers: <Widget>[
@@ -217,9 +210,9 @@ class _StudyDetailState extends State<StudyDetail> {
                           child: Row(
                             children: [
                               CircleAvatar(
-                                backgroundColor: buttonColor,
-                                child: Text('${displayName.userModel.fullName.split("")[0][0]}${user.userModel.fullName.split(" ")[1][0]}')
-                              ),
+                                  backgroundColor: buttonColor,
+                                  child: Text(
+                                      '${displayName.userModel.fullName.split("")[0][0]}${user.userModel.fullName.split(" ")[1][0]}')),
                               Text(finalComment[index].comment),
                             ],
                           ),
@@ -264,63 +257,6 @@ class _StudyDetailState extends State<StudyDetail> {
 
           //
         ],
-=======
-      body: SafeArea(
-        child: Container(
-          height: double.infinity,
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  width: double.infinity,
-                  color: buttonColor,
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pop(context);
-                              },
-                              child: Icon(
-                                Icons.arrow_back,
-                                color: Colors.white,
-                              )),
-                          Spacer(),
-                          GestureDetector(
-                              onTap: () {
-                                createDynamicLink(widget.id);
-                              },
-                              child: Icon(
-                                Icons.share,
-                                color: Colors.white,
-                              )),
-                        ],
-                      ),
-                      SizedBox(height: 24),
-                      CustomText(
-                          text: widget.courseCode,
-                          size: 24,
-                          color: HexColor('FFFFFF')),
-                      SizedBox(height: 32),
-                    ],
-                  ),
-                ),
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.6,
-                  color: Colors.white,
-                  width: double.infinity,
-                  child: Column(children: [
-                    Text('${url}')
-                  ],),
-                )
-              ]),
-        ),
->>>>>>> 9c21482417de6d6066eafc86908f7e09c494aebc
       ),
     );
   }
