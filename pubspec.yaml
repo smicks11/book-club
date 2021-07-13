@@ -41,6 +41,7 @@ dependencies:
   modal_bottom_sheet: ^2.0.0
   flutter_datetime_picker: ^1.5.1
   firebase_dynamic_links: ^2.0.6
+  firebase_storage: ^9.0.0
   get:
   comment_box: ^0.0.16
 

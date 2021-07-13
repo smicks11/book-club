@@ -265,9 +265,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      FirebaseAuth.instance.signOut();
-                      // Navigator.of(context).push(MaterialPageRoute(
-                      //     builder: (ctx) => PageViewScreen()));
+                     // FirebaseAuth.instance.signOut();
+                      Navigator.of(context).push(MaterialPageRoute(
+                    builder: (ctx) => PageViewScreen()));
                     },
                     child: Container(
                       alignment: Alignment.center,

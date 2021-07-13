@@ -29,6 +29,7 @@ class _SignInPageState extends State<SignInPage> {
         FirebaseAuth.instance
             .signInWithEmailAndPassword(email: emailL, password: passwordL)
             .then((result) {
+              print(result);
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => HomePage()));
         });
