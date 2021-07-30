@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 class button extends StatelessWidget {
   final String text;
   const button({
-    Key key, @required this.text,
+    Key key,
+    @required this.text,
   }) : super(key: key);
 
   @override

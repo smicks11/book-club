@@ -1,18 +1,25 @@
-import 'package:book_club/models/userModel.dart';
+// import 'package:book_club/models/userModel.dart';
 import 'package:book_club/provider/Userprovider.dart';
 import 'package:book_club/provider/onBoarding.dart';
-import 'package:book_club/screens/Auth/SignIn_Page.dart';
+// import 'package:book_club/screens/Auth/SignIn_Page.dart';
+import 'package:book_club/screens/Homescreen/Profile.dart';
 import 'package:book_club/screens/Homescreen/notifications.dart';
 import 'package:book_club/screens/Homescreen/preferences.dart';
+// import 'package:book_club/screens/Library/library.dart';
+// import 'package:book_club/screens/Study/study.dart';
+// import 'package:book_club/screens/Study/studyDetail.dart';
+import 'package:book_club/screens/Study/studyGroupInvite.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
 import 'package:book_club/shared/tab.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hex_color/flutter_hex_color.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class CuratedTimeTable extends StatefulWidget {
   const CuratedTimeTable({Key key}) : super(key: key);
@@ -23,32 +30,93 @@ class CuratedTimeTable extends StatefulWidget {
 
 class _CuratedTimeTableState extends State<CuratedTimeTable> {
   TimeTableProvider timeTableProvider;
-  List days = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'];
-  List weekdays = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri'];
+  List days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  List weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
   List weekends = ['Sat', 'Sun'];
-  String selectedDay = 'Mon';
+  String selectedDay = 
+      DateFormat(DateFormat.ABBR_WEEKDAY).format(DateTime.now());
+  String selectDay = DateFormat(DateFormat.ABBR_WEEKDAY).format(DateTime.now());
 
-  List timetable = [];
+  List monday = [];
+  List tuesday = [];
+  List wednesday = [];
+  List thursday = [];
+  List friday = [];
+  List saturday = [];
+  List mon, tue, wed, thur, fri, sat, sun = [" "];
+  DateTime date = DateTime.now();
   StateSetter ttTable;
 
   @override
   void initState() {
     super.initState();
-    getTimetable();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserProvider>(context, listen: false).getUserData(context);
-      //Provider.of<TimeTableProvider>(context, listen: false).getStudyTimeTable(context);
+      getstudyTimetable();
+      // print(DateFormat('EEEE').format(date));
+      // print(DateFormat(DateFormat.ABBR_WEEKDAY).format(date));
     });
+    initDynamicLinks();
   }
 
-  Future<List> getTimetable() async {
-    List timetableList = [];
-    final timetables = FirebaseFirestore.instance.collection('Timetable');
-    timetables.get().then((querySnapshot) {
-      final timeTableData = querySnapshot.docs.map((doc) => doc.data());
-      timetableList.add(timeTableData);
+  Future<void> initDynamicLinks() async {
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+      final Uri deepLink = dynamicLink.link;
+      if (deepLink != null) {
+        print('this is the deeplink for null');
+        //print(deepLink.path);
+        print(deepLink.queryParameters['id']);
+        // Navigator.pushNamed(context, '/invite', arguments: deepLink.queryParameters['id']);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => StudyInvite(id: deepLink.path),
+          ),
+        );
+      }
+    }, onError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
     });
-    return timetableList;
+
+    final PendingDynamicLinkData data =
+        await FirebaseDynamicLinks.instance.getInitialLink();
+    final Uri deepLink = data?.link;
+
+    if (deepLink != null) {
+      print('this is the deeplink');
+      print(deepLink.queryParameters['id']);
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (BuildContext context) => StudyInvite(id:deepLink.queryParameters['id']),
+      //   ),
+      // );
+      Navigator.pushNamed(context, '/invite',
+          arguments: deepLink.queryParameters['id']);
+    }
+
+    // if(deepLink.path = '')
+  }
+
+  Future getstudyTimetable() async {
+    var instance = FirebaseFirestore.instance;
+    CollectionReference study = instance.collection('Timetable');
+    QuerySnapshot snapshot = await study.doc('study').get().then((value) {
+      // ignore: missing_return
+      Map<String, dynamic> data = new Map<String, dynamic>.from(value.data());
+      setState(() {
+        mon = data['monday'];
+        tue = data['tuesday'];
+        wed = data['Wednesday'];
+        thur = data['thursday'];
+        fri = data['friday'];
+        sat = data['saturday'];
+        sun = data['sunday'];
+      });
+    });
   }
 
   @override
@@ -110,16 +178,15 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                       ),
                                       GestureDetector(
                                         onTap: () async {
-                                          await FirebaseAuth.instance.signOut();
-                                          Navigator.of(context).pushReplacement(
+                                          Navigator.of(context).push(
                                               MaterialPageRoute(
-                                                  builder: (ctx) =>
-                                                      SignInPage()));
+                                                  builder: (ctx) => Profile()));
                                         },
                                         child: CircleAvatar(
                                           backgroundColor: Colors.white,
                                           child: Text(
-                                            '${user.userModel.fullName.split("")[0][0]}${user.userModel.fullName.split(" ")[1][0]}',
+                                            '${user.userModel.fullName.split("")[0][0]}',
+                                            // '${user.userModel.fullName.split("")[0][0]}${user.userModel.fullName.split(" ")[1][0].isEmpty ? " " : user.userModel.fullName.split(" ")[1][0]}',
                                             style: TextStyle(
                                                 color: buttonColor,
                                                 fontSize: 14,
@@ -152,6 +219,7 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                                 onTap: () {
                                                   setState(() {
                                                     selectedDay = e;
+                                                    selectDay = e;
                                                   });
                                                 },
                                                 child: Container(
@@ -177,13 +245,24 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                                           .map((e) => GestureDetector(
                                                 onTap: () {
                                                   setState(() {
+                                                    // if(selectedDay.contains(DateFormat('EEEE').format(date).toString())){
+                                                    //   return selectedDay = e;
+                                                    // }
+                                                    // do {
+                                                    //   selectedDay = e;
+                                                    // } while (
+                                                    //   DateFormat('EEEE').format(date).contains(selectedDay)
+                                                    // );
+
                                                     selectedDay = e;
+                                                    selectDay = e;
                                                   });
                                                 },
                                                 child: Container(
                                                   padding:
                                                       const EdgeInsets.all(10),
                                                   decoration: BoxDecoration(
+                                                      // DateFormat('EEEE').format(date).contains(e)
                                                       color: selectedDay == e
                                                           ? HexColor('001E97')
                                                           : Colors.transparent,
@@ -212,30 +291,123 @@ class _CuratedTimeTableState extends State<CuratedTimeTable> {
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12)),
-                          child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Timetable(
-                                  course: 'CSC 203',
-                                  time: '05 AM - 07 PM',
-                                ),
-                                Container(
-                                  height: 60,
-                                  width: 0.6,
-                                  color: HexColor('E4E7F1'),
-                                ),
-                                Timetable(
-                                  course: 'CSC 203',
-                                  time: '05 AM - 07 PM',
-                                )
-                              ]
-
-                              //
-
-                              //
-
-                              ),
+                          child: selectedDay.contains('Mon')
+                              ? Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                      Timetable(
+                                        course: '${mon[0]['courseCode']}',
+                                        time: '${mon[0]['time']} AM',
+                                      ),
+                                      Container(
+                                        height: 60,
+                                        width: 0.6,
+                                        color: HexColor('E4E7F1'),
+                                      ),
+                                      Timetable(
+                                        course: '${mon[1]['courseCode']}',
+                                        time: '${mon[1]['time']} PM',
+                                      ),
+                                    ])
+                              : selectDay.contains('Tue')
+                                  ? Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                          Timetable(
+                                            course: '${tue[0]['courseCode']}',
+                                            time: '${tue[0]['time']} AM',
+                                          ),
+                                          Container(
+                                            height: 60,
+                                            width: 0.6,
+                                            color: HexColor('E4E7F1'),
+                                          ),
+                                          Timetable(
+                                            course: '${tue[1]['courseCode']}',
+                                            time: '${tue[1]['time']} PM',
+                                          ),
+                                        ])
+                                  : selectDay.contains('Wed')
+                                      ? Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                              Timetable(
+                                                course:
+                                                    '${wed[0]['courseCode']}',
+                                                time: '${wed[0]['time']} AM',
+                                              ),
+                                              Container(
+                                                height: 60,
+                                                width: 0.6,
+                                                color: HexColor('E4E7F1'),
+                                              ),
+                                              Timetable(
+                                                course:
+                                                    '${wed[1]['courseCode']}',
+                                                time: '${wed[1]['time']} PM',
+                                              ),
+                                            ])
+                                      : selectDay.contains('Thu')
+                                          ? Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                  Timetable(
+                                                    course:
+                                                        '${thur[0]['courseCode']}',
+                                                    time:
+                                                        '${thur[0]['time']} AM',
+                                                  ),
+                                                  Container(
+                                                    height: 60,
+                                                    width: 0.6,
+                                                    color: HexColor('E4E7F1'),
+                                                  ),
+                                                  Timetable(
+                                                    course:
+                                                        '${thur[1]['courseCode']}',
+                                                    time:
+                                                        '${thur[1]['time']} PM',
+                                                  ),
+                                                ])
+                                          : selectDay.contains('Fri')
+                                              ? Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                      Timetable(
+                                                        course:
+                                                            '${fri[0]['courseCode']}',
+                                                        time:
+                                                            '${fri[0]['time']} AM',
+                                                      ),
+                                                      Container(
+                                                        height: 60,
+                                                        width: 0.6,
+                                                        color:
+                                                            HexColor('E4E7F1'),
+                                                      ),
+                                                      Timetable(
+                                                        course:
+                                                            '${fri[1]['courseCode']}',
+                                                        time:
+                                                            '${fri[1]['time']} PM',
+                                                      ),
+                                                    ])
+                                              : SizedBox.shrink(),
                         ),
                       )
                     ],

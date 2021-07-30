@@ -39,6 +39,7 @@ class StudyProvider with ChangeNotifier {
 
   Future<void> getStudyGroup(BuildContext context) async {
     List<StudyGroupModel> newStudyGroupList = [];
+    List membersID;
     String docID = '';
     User currentUser = FirebaseAuth.instance.currentUser;
     FirebaseAuth.instance.authStateChanges().listen((User user) {
@@ -56,24 +57,31 @@ class StudyProvider with ChangeNotifier {
         .get();
 
     studyGroupSnapShots.docs.forEach((element) {
-      studyGroupModel = StudyGroupModel(
-        id: element.id,
-        courseCode: element.get("courseCode"),
-        location: element.get("location"),
-        when: element.get("when"),
-        // forum: element.get({"comment": "comment", "userID": "userID"}),
-        userID: element.get('userID'),
-      );
-
-      newStudyGroupList.add(studyGroupModel);
-      studyGroupModelList = newStudyGroupList;
-
+      membersID = element.get('members');
+      print('This is memebers ID');
+      print(membersID);
+      for (var i = 0; i <= membersID.length; i++) {
+        print('this is in the loop');
+        print(element.get('members')[i]);
+        if (element.get('members')[i] == membersID[i]) {
+          studyGroupModel = StudyGroupModel(
+            id: element.id,
+            courseCode: element.get("courseCode"),
+            location: element.get("location"),
+            when: element.get("when"),
+            meetingDays: element.get("meetingDays"),
+            // forum: element.get({"comment": "comment", "userID": "userID"}),
+            userID: element.get('userID'),
+          );
+          newStudyGroupList.add(studyGroupModel);
+          studyGroupModelList = newStudyGroupList;
+        }
+        break;
+      }
     });
 
     notifyListeners();
   }
-
-  
 
   List<TutorialModel> get getTutorialModelList {
     return tutorialModelList;

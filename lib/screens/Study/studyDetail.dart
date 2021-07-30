@@ -1,12 +1,17 @@
+import 'package:book_club/models/commentmodel.dart';
 import 'package:book_club/provider/StudyProvider.dart';
-import 'package:book_club/shared/button.dart';
+import 'package:book_club/provider/Userprovider.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'dart:math' as math;
 import 'package:flutter_hex_color/flutter_hex_color.dart';
 import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class StudyDetail extends StatefulWidget {
   final String courseCode;
@@ -15,139 +20,266 @@ class StudyDetail extends StatefulWidget {
   final String id;
   const StudyDetail(
       {Key key,
-        this.id,
-        this.courseCode,
-        this.when,
-        this.location,})
+      @required this.courseCode,
+      @required this.when,
+      @required this.location,
+      this.id})
       : super(key: key);
 
   @override
   _StudyDetailState createState() => _StudyDetailState();
 }
 
+String comment;
+
 class _StudyDetailState extends State<StudyDetail> {
+  List<CommentModel> finalComment = List<CommentModel>.empty(growable: true);
+  TextEditingController textController = TextEditingController();
+  List comments = [""];
+  StateSetter forumState;
+  StudyProvider studyProvider;
 
-  String url = '';
+  String link = '';
+  bool _isCreatingLink = false;
+  String _linkMessage;
 
-  Future<Uri> createDynamicLink(String id) async {
-
+  // ignore: missing_return
+  Future<void> createDynamicLink(String id) async {
+    setState(() {
+      _isCreatingLink = true;
+    });
     final DynamicLinkParameters parameters = DynamicLinkParameters(
       uriPrefix: 'https://funet.page.link',
-      link: Uri.parse('https://funet.page.link/?id=$id'),
+      link: Uri.parse('https://funet.page.link/$id'),
       androidParameters: AndroidParameters(
         packageName: 'com.example.book_club',
         minimumVersion: 1,
       ),
-      iosParameters: IosParameters(
-        bundleId: 'com.example.book_club',
-        minimumVersion: '1.0.1',
+      dynamicLinkParametersOptions: DynamicLinkParametersOptions(
+        shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short,
+      ),
+      socialMetaTagParameters: SocialMetaTagParameters(
+        title: 'Funet Book Club',
+        description:
+            'Hi! Join my ${widget.courseCode} study group with this link',
       ),
     );
 
-    final ShortDynamicLink shortDynamicLink = await parameters.buildShortLink();
-    final Uri shortUrl = shortDynamicLink.shortUrl;
+    Uri url;
+    final ShortDynamicLink shortLink = await parameters.buildShortLink();
+    url = shortLink.shortUrl;
 
     setState(() {
-      url = shortUrl.toString();
+      _linkMessage = url.toString();
+      _isCreatingLink = false;
     });
 
-    print(url);
-    //return shortUrl;
+    print(_linkMessage);
   }
 
-  Future<void> initDynamicLinks() async {
-    FirebaseDynamicLinks.instance.onLink(
-        onSuccess: (PendingDynamicLinkData dynamicLink) async {
-          final Uri deepLink = dynamicLink?.link;
-
-          if (deepLink != null) {
-            // ignore: unawaited_futures
-            Navigator.pushNamed(context, deepLink.path);
-          }
-        }, onError: (OnLinkErrorException e) async {
-      print('onLinkError');
-      print(e.message);
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getComments(widget.id);
     });
+  }
 
-    final PendingDynamicLinkData data =
-    await FirebaseDynamicLinks.instance.getInitialLink();
-    final Uri deepLink = data?.link;
+  void createForumComments() async {
+    final userID = FirebaseAuth.instance.currentUser;
 
-    if (deepLink != null) {
-      // ignore: unawaited_futures
-      Navigator.pushNamed(context, deepLink.path);
+    try {
+      FirebaseFirestore.instance.collection("studyGroup").doc(widget.id).set({
+        'forum': FieldValue.arrayUnion([
+          {"comment": comment, "userId": userID.displayName},
+        ])
+      }, SetOptions(merge: true));
+      getComments(widget.id);
+    } on PlatformException catch (e) {
+      print(e.message.toString());
     }
   }
 
-
-
-  void initState() {
-    initDynamicLinks();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<StudyProvider>(context, listen: false).getStudyGroup(context);
+  Future<void> getComments(id) async {
+    List<CommentModel> mainComment = [];
+    FirebaseFirestore.instance
+        .collection("studyGroup")
+        .doc(widget.id)
+        .get()
+        .then((docSnapshot) {
+      setState(() {
+        comments = docSnapshot.data()['forum'];
+      });
+      comments.forEach((element) {
+        CommentModel commentModel = CommentModel(
+          comment: element['comment'],
+          uid: element['userId'],
+        );
+        mainComment.add(commentModel);
+      });
     });
-    super.initState();
+
+    finalComment = mainComment;
+
+    // notifyListeners();
   }
+
   @override
   Widget build(BuildContext context) {
+    UserProvider user;
+    studyProvider = Provider.of<StudyProvider>(context);
+
+    // final displayName = Provider.of<UserProvider>(context, listen: true);
+    //displayName.getUserData(context);
+    //studyProvider.getComments();
     return Scaffold(
+      //resizeToAvoidBottomInset: false,
       backgroundColor: buttonColor,
-      body: SafeArea(
-        child: Container(
-          height: double.infinity,
+      body: Container(
           child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Container(
+            margin: EdgeInsets.only(top: 44),
+            width: double.infinity,
+            padding: const EdgeInsets.all(24),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  width: double.infinity,
-                  color: buttonColor,
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pop(context);
-                              },
-                              child: Icon(
-                                Icons.arrow_back,
-                                color: Colors.white,
-                              )),
-                          Spacer(),
-                          GestureDetector(
-                              onTap: () {
-                                createDynamicLink(widget.id);
-                              },
-                              child: Icon(
-                                Icons.share,
-                                color: Colors.white,
-                              )),
-                        ],
-                      ),
-                      SizedBox(height: 24),
-                      CustomText(
-                          text: widget.courseCode,
-                          size: 24,
-                          color: HexColor('FFFFFF')),
-                      SizedBox(height: 32),
-                    ],
-                  ),
+                Row(
+                  children: [
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop(context);
+                        },
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                        )),
+                    Spacer(),
+                    Text(
+                      'Study Group Detail',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    Spacer(),
+                    GestureDetector(
+                        onTap: () {
+                          print('is this thing even working');
+
+                          createDynamicLink(widget.id).then((value) =>
+                              Clipboard.setData(
+                                  ClipboardData(text: _linkMessage)));
+                          Fluttertoast.showToast(
+                              msg: 'Link Copied Successfully');
+                        },
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          child: Icon(
+                            Icons.share,
+                            color: Colors.white,
+                          ),
+                        )),
+                  ],
                 ),
+                SizedBox(height: 24),
+                GestureDetector(
+                  onTap: () {
+                    createDynamicLink(widget.id);
+                  },
+                  child: CustomText(
+                      text: widget.courseCode,
+                      size: 24,
+                      color: HexColor('FFFFFF')),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Container(
+              color: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ListView.builder(
+                itemCount: finalComment.length,
+                itemBuilder: (_, index) {
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                            backgroundColor: buttonColor,
+                            child: Text(
+                                '${finalComment[index].uid.split(" ")[0][0]}${finalComment[index].uid.split(" ")[1][0]}')),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              finalComment[index].uid,
+                              style: TextStyle(
+                                  color: HexColor('747474'),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12),
+                            ),
+                            Text(
+                              finalComment[index].comment,
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+          Container(
+            color: Colors.white,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.6,
-                  color: Colors.white,
-                  width: double.infinity,
-                  child: Column(children: [
-                    Text('${url}')
-                  ],),
+                  decoration: BoxDecoration(
+                    // color: backgroundColor,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: TextFormField(
+                    controller: textController,
+                    onChanged: (value) {
+                      setState(() {
+                        comment = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      hintText: "Type a message",
+                      suffixIcon: GestureDetector(
+                          onTap: () async {
+                            createForumComments();
+                            textController.text = '';
+                          },
+                          child: Icon(Icons.send)),
+                    ),
+                  ),
                 )
-              ]),
-        ),
-      ),
+                // Text('adkljf')
+              ],
+            ),
+          ),
+        ],
+      )),
     );
   }
 }

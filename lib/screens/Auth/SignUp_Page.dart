@@ -9,6 +9,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 // import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -24,7 +26,7 @@ String email;
 String matricNumber;
 bool isMale = true;
 String password;
-String dept;
+String depts;
 String level;
 String fullName;
 
@@ -35,10 +37,11 @@ String p = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\
 
 String selectedValue;
 String selectedValueLevel;
+String selectedValueDept;
 bool admin = false;
 
 class _SignUpPageState extends State<SignUpPage> {
-  void validation() async {
+  Future validation() async {
     // setState(() {
     //   loading = true;
     // });
@@ -51,42 +54,41 @@ class _SignUpPageState extends State<SignUpPage> {
         setState(() {
           loading = false;
         });
+        result.user.updateDisplayName(fullName);
         FirebaseFirestore.instance.collection("User").doc(result.user.uid).set({
           "UserId": result.user.uid,
           "UserEmail": email,
-          "displayName": fullName,
+          "fullName": fullName,
           "Password": password,
-          "Dept": dept,
+          "Dept": depts,
           "Level": level,
           "readingDays" : "",
           "readingSession" : "",
           "admin" : admin
         }).then((res) {
+          showTopSnackBar(
+            context,
+            CustomSnackBar.success(
+              message:
+              "Account Created Successfully",
+            ),
+          );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => HomePage(name:fullName)),
         );
       });
         // Navigator.pushAndRemoveUntil(context,
         //     MaterialPageRoute(builder: (ctx) => HomePage(name:fullName)), (route) => false);
         // myDialogBox();
       } on PlatformException catch (e) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text("Error"),
-              content: Text(e.message),
-              actions: [
-                TextButton(
-                  child: Text("Ok"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
-            );
-          });
+        showTopSnackBar(
+          context,
+          CustomSnackBar.error(
+            message:
+            e.message.toString(),
+          ),
+        );
         print(e.message.toString());
       }
     } else {}
@@ -120,10 +122,14 @@ class _SignUpPageState extends State<SignUpPage> {
         cursorColor: Colors.black,
         // controller: controller,
         decoration: InputDecoration(
+          border: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          errorBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
           labelText: labelText,
           suffixIcon: textIcon,
           contentPadding: EdgeInsets.only(left: 16),
-          border: UnderlineInputBorder(borderSide: BorderSide.none),
           labelStyle: TextStyle(
               fontSize: 14,
               color: primaryTextColor,
@@ -229,7 +235,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       fontWeight: FontWeight.w500),
                                 ),
                               ),
-                              value: selectedValue,
+                              value: selectedValueDept,
                               items: dept.map((String value) {
                                 return DropdownMenuItem(
                                   value: value,
@@ -244,8 +250,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               }).toList(),
                               onChanged: (value) {
                                 setState(() {
-                                  selectedValue = value;
-                                  print(selectedValue);
+                                  selectedValueDept = value;
+                                  depts = value;
                                 });
                               },
                             ),
@@ -285,6 +291,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               onChanged: (value) {
                                 setState(() {
                                   selectedValueLevel = value;
+                                  level = value;
                                   print(selectedValueLevel);
                                 });
                               },
@@ -325,7 +332,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     SizedBox(height: 80,),
                     GestureDetector(
-                      onTap: () async {
+                      onTap: fullName == '' ? null : () async {
                         validation();
                       },
                       child: Container(

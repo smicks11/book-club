@@ -10,7 +10,7 @@ class UserProvider with ChangeNotifier {
 
   //Get User Data From Firebase
 
-  Future<void> getUserData(BuildContext context) async {
+  Future<String> getUserData(BuildContext context) async {
     List<UserModel> newUserList = [];
     User currentUser = FirebaseAuth.instance.currentUser;
 
@@ -19,7 +19,7 @@ class UserProvider with ChangeNotifier {
     userSnapShots.docs.forEach((element) {
       if (currentUser.uid == element.get("UserId")) {
         userModel = UserModel(
-            fullName: element.get("FullName"),
+            fullName: element.get("fullName"),
             dept: element.get("Dept"),
             level: element.get("Level"),
             userID: element.get("UserId"),

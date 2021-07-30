@@ -5,6 +5,7 @@ import 'package:book_club/screens/pageview.dart';
 // import 'package:book_club/screens/pageview.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,12 +20,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   UserProvider userProvider;
-  List _read = ["Morning", "Evening"];
+  List _read = ["Morning", "Evening","Both"];
   String _firstSelectedOption;
   String _secondSelectedOption;
   String _thirdSelectedOption;
 
-  List _time = ["Weekdays", "Weekends"];
+  List _time = ["Weekdays", "Weekends", "Both"];
   List getTime;
   List _timeTable = ["Yes", "No, i will do it myself"];
   String weekDaysFrame = "Mon Tue Wed Thur Fri";
@@ -33,14 +34,27 @@ class _HomePageState extends State<HomePage> {
   String convertFirstSelect;
   String convertSecondSelect;
   String convertThirdSelect;
+  String readingSession = null;
+  String readingDays = '';
 
   void initState() {
-    print(widget.name);
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserProvider>(context, listen: false).getUserData(context);
+    });
   }
 
-
-
+  updateUserData() async{
+    User currentUser = FirebaseAuth.instance.currentUser;
+    print(currentUser.uid);
+    var courses = await FirebaseFirestore.instance.collection("User").doc(currentUser.uid).update({
+      "readingSession": readingSession.toLowerCase(),
+      "readingDays": readingDays.toLowerCase()
+    }).then((value) {
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (ctx) => PageViewScreen()));
+    });
+  }
   Widget _buildHeader() {
     List<UserModel> userModel = userProvider.userModelList;
     return Container(
@@ -58,7 +72,7 @@ class _HomePageState extends State<HomePage> {
           return Column(
             children: [
               CustomText(
-                  text: "Hi ${e.fullName.split(" ")[0]} 🥳",
+                  text: "Hi ${e.fullName == '' ?  widget.name : e.fullName.split(" ")[0]} 🥳",
                   size: 20,
                   color: white,
                   weight: FontWeight.w500),
@@ -82,23 +96,21 @@ class _HomePageState extends State<HomePage> {
           return GestureDetector(
             onTap: () {
               setState(() {
-                _firstSelectedOption = e;
-                convertFirstSelect = e;
-                print(_firstSelectedOption);
+                readingSession = e;
               });
             },
             child: Container(
               alignment: Alignment.center,
               height: 65,
-              width: MediaQuery.of(context).size.height * 0.2,
+              padding: const EdgeInsets.symmetric(horizontal: 30),
               decoration: BoxDecoration(
-                color: _firstSelectedOption == e ? buttonColor : white,
+                color: readingSession == e ? buttonColor : white,
                 borderRadius: BorderRadius.circular(30),
               ),
               child: CustomText(
                 text: e,
                 size: 14,
-                color: _firstSelectedOption == e ? white : buttonColor,
+                color: readingSession == e ? white : buttonColor,
                 weight: FontWeight.w500,
               ),
             ),
@@ -116,23 +128,21 @@ class _HomePageState extends State<HomePage> {
           return GestureDetector(
             onTap: () {
               setState(() {
-                convertSecondSelect = e;
-                _secondSelectedOption = e;
-                print(_secondSelectedOption);
+                readingDays = e;
               });
             },
             child: Container(
               alignment: Alignment.center,
               height: 65,
-              width: MediaQuery.of(context).size.height * 0.2,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
-                color: _secondSelectedOption == e ? buttonColor : white,
+                color: readingDays == e ? buttonColor : white,
                 borderRadius: BorderRadius.circular(30),
               ),
               child: CustomText(
                 text: e,
                 size: 14,
-                color: _secondSelectedOption == e ? white : buttonColor,
+                color: readingDays == e ? white : buttonColor,
                 weight: FontWeight.w500,
               ),
             ),
@@ -240,34 +250,12 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(
                     height: 50,
                   ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20),
-                    height: MediaQuery.of(context).size.height * 0.2,
-                    width: double.infinity,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomText(
-                            text:
-                                "Would you like us to help you curate your timetable?",
-                            size: 16,
-                            color: primaryTextColor,
-                            weight: FontWeight.w500),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        _thirdOption(),
-                      ],
-                    ),
-                  ),
                   SizedBox(
                     height: 10,
                   ),
                   GestureDetector(
-                    onTap: () {
-                     // FirebaseAuth.instance.signOut();
-                      Navigator.of(context).push(MaterialPageRoute(
-                    builder: (ctx) => PageViewScreen()));
+                    onTap: readingSession == null ? null : () {
+                      updateUserData();
                     },
                     child: Container(
                       alignment: Alignment.center,

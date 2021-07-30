@@ -3,12 +3,16 @@ import 'package:book_club/shared/button.dart';
 import 'package:book_club/shared/constants.dart';
 import 'package:book_club/shared/customtext.dart';
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hex_color/flutter_hex_color.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+
+
+String file = "pdfs/slides.pdf";
+String fileName = "Flutter Slides";
 
 class CourseDoc extends StatefulWidget {
   final String courseCode;
@@ -21,6 +25,8 @@ class CourseDoc extends StatefulWidget {
 class _CourseDocState extends State<CourseDoc>
     with SingleTickerProviderStateMixin {
 
+  static String pathPDF = "";
+  static String pdfUrl = "";
 
   @override
   void initState() {
@@ -34,8 +40,12 @@ class _CourseDocState extends State<CourseDoc>
 
   Future<void> getDocuments(){
     //Fetch file from FirebaseStorage first
-
-
+    // final FirebaseFirestore fb = FirebaseFirestore.instance;
+    //
+    // fb.ref('CSC 306 note.pdf').getDownloadURL()
+    //     .then((url) => {
+    //   print(url)
+    // });
   }
 
 
@@ -103,8 +113,7 @@ class _CourseDocState extends State<CourseDoc>
                   Scaffold(
                     backgroundColor: backgroundColor,
                     body: Container(
-                      child: SfPdfViewer.network(
-                          'https://firebasestorage.googleapis.com/v0/b/book-club-226bb.appspot.com/o/CSC%20306%2FCsc%20306%20note.pdf?alt=media&token=8aef9368-7dd4-4741-9144-0a6178c01b49')
+                      child: Text('Documents'),
                     ),
                   ),
                   Scaffold(

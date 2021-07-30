@@ -9,21 +9,10 @@ class TimeTableProvider with ChangeNotifier {
 
   //Get User Data From Firebase
 
-  // Future<void> getStudyTimeTable(BuildContext context) async {
-  //  var instance = FirebaseFirestore.instance;
-  //
-  //  CollectionReference study = instance.collection('Studies');
-  //
-  //  DocumentSnapshot snapshot = await study.doc('study').get();
-  //  var data = snapshot.data() as Map;
-  //  var studyData = data['timetable'] as List<dynamic>;
-  //
-  //  studyData.forEach((sData){
-  //    TimeTableModel table = TimeTableModel.fromJson(sData);
-  //    ttModelList.add(table);
-  //  });
-  //
-  // }
+  Future getStudyTimeTable(BuildContext context) async {
+
+
+  }
 
   List<TimeTableModel> get getTimeTableModelList {
     return ttModelList;

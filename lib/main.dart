@@ -40,32 +40,12 @@ void main() async {
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
+
+
   @override
   Widget build(BuildContext context) {
     UserProvider userProvider;
-
-    void initDynamicLinks() async {
-      FirebaseDynamicLinks.instance.onLink(
-          onSuccess: (PendingDynamicLinkData dynamicLink) async {
-            final Uri deepLink = dynamicLink?.link;
-
-            if (deepLink != null) {
-              Navigator.pushNamed(context, deepLink.path);
-            }
-          },
-          onError: (OnLinkErrorException e) async {
-            print('onLinkError');
-            print(e.message);
-          }
-      );
-
-      final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
-      final Uri deepLink = data?.link;
-
-      if (deepLink != null) {
-        Navigator.pushNamed(context, deepLink.path);
-      }
-    }
+    User currentUser = FirebaseAuth.instance.currentUser;
 
     return MultiProvider(
       providers: [
@@ -93,7 +73,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           initialRoute: '/',
           routes: <String, WidgetBuilder>{
-            '/id': (BuildContext context) => StudyDetail(),
+            '/invite': (BuildContext context) => StudyInvite(),
           },
           navigatorObservers: [Statusbarz.instance.observer],
           theme: ThemeData(

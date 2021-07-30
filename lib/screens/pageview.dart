@@ -23,6 +23,7 @@ class _PageViewScreenState extends State<PageViewScreen> with WidgetsBindingObse
   @override
   void initState() {
     super.initState();
+    initDynamicLinks();
     WidgetsBinding.instance.addObserver(this);
     _selectedPageIndex = 0;
     _pages = [CuratedTimeTable(), Study(), Library()];
@@ -36,6 +37,33 @@ class _PageViewScreenState extends State<PageViewScreen> with WidgetsBindingObse
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
+
+  Future<void> initDynamicLinks() async {
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+          final Uri deepLink = dynamicLink.link;
+          if (deepLink != null) {
+            print(deepLink.queryParameters['id']);
+            Navigator.pushNamed(context, '/invite', arguments: deepLink.queryParameters['id']);
+          }
+        }, onError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
+    });
+
+    final PendingDynamicLinkData data =
+    await FirebaseDynamicLinks.instance.getInitialLink();
+    final Uri deepLink = data?.link;
+
+    if (deepLink != null) {
+      print(deepLink.queryParameters['id']);
+      Navigator.pushNamed(context, '/invite', arguments: deepLink.queryParameters['id']);
+    }
+
+    // if(deepLink.path = '')
+  }
+
+
 
 
 
