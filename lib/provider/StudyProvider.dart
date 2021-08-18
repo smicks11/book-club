@@ -53,17 +53,9 @@ class StudyProvider with ChangeNotifier {
     });
     QuerySnapshot studyGroupSnapShots = await FirebaseFirestore.instance
         .collection("studyGroup")
-        .where('userID', isEqualTo: currentUser.uid)
+      .where('members', arrayContains: currentUser.uid)
         .get();
-
     studyGroupSnapShots.docs.forEach((element) {
-      membersID = element.get('members');
-      print('This is memebers ID');
-      print(membersID);
-      for (var i = 0; i <= membersID.length; i++) {
-        print('this is in the loop');
-        print(element.get('members')[i]);
-        if (element.get('members')[i] == membersID[i]) {
           studyGroupModel = StudyGroupModel(
             id: element.id,
             courseCode: element.get("courseCode"),
@@ -75,9 +67,7 @@ class StudyProvider with ChangeNotifier {
           );
           newStudyGroupList.add(studyGroupModel);
           studyGroupModelList = newStudyGroupList;
-        }
-        break;
-      }
+      
     });
 
     notifyListeners();

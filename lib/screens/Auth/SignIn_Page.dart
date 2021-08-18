@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:book_club/screens/Auth/SignUp_Page.dart';
 import 'package:book_club/screens/checkSelection.dart';
 import 'package:book_club/screens/homepage.dart';
@@ -23,6 +25,36 @@ String emailL;
 final GlobalKey<FormState> _signKey = GlobalKey<FormState>();
 
 class _SignInPageState extends State<SignInPage> {
+  void animateButton() {
+    setState(() {
+      _state = 1;
+    });
+
+    Timer(Duration(milliseconds: 3300), () {
+      setState(() {
+        _state = 2;
+      });
+    });
+  }
+  var _state = 0;
+
+  Widget setUpButtonChild() {
+    if (_state == 0) {
+      return new Text(
+        "Log In",
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 16.0,
+        ),
+      );
+    } else if (_state == 1) {
+      return CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      );
+    } else {
+      return Icon(Icons.check, color: Colors.white);
+    }
+  }
   Future<void> validation() async {
     final FormState _form = _signKey.currentState;
     try {
@@ -32,8 +64,8 @@ class _SignInPageState extends State<SignInPage> {
           .signInWithEmailAndPassword(email: emailL, password: passwordL)
           .then((result) {
         print(result);
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => CheckSelection()));
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => CheckSelection()));
       });
       setState(() {
         loading = false;
@@ -48,7 +80,7 @@ class _SignInPageState extends State<SignInPage> {
         context,
         CustomSnackBar.error(
           message:
-          "Something went wrong. Please check your credentials and try again",
+              "Something went wrong. Please check your credentials and try again",
         ),
       );
     }
@@ -121,9 +153,7 @@ class _SignInPageState extends State<SignInPage> {
                       child: Column(children: [
                         _buildFields(
                             labelText: "Email Address",
-                            validator: (value) {
-
-                            },
+                            validator: (value) {},
                             onChanged: (value) {
                               setState(() {
                                 emailL = value;
@@ -154,9 +184,14 @@ class _SignInPageState extends State<SignInPage> {
                       ]),
                     ),
                     GestureDetector(
-                      onTap: passwordL == null
+                      onTap: passwordL == null && emailL == null
                           ? null
                           : () {
+                              setState(() {
+                                if (_state == 0) {
+                                  animateButton();
+                                }
+                              });
                               validation();
                             },
                       child: Container(
@@ -168,12 +203,7 @@ class _SignInPageState extends State<SignInPage> {
                           color: buttonColor,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: CustomText(
-                          text: "Log In",
-                          size: 17,
-                          weight: FontWeight.w400,
-                          color: white,
-                        ),
+                        child: setUpButtonChild(),
                       ),
                     ),
                     Container(
